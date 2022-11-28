@@ -31,6 +31,6 @@ class Career<extends Entity> {
 }
 
 User "1" -- "1" Career
-User "1" -- "1..*" Skill
+User "1..*" -- "1..*" Skill
 
 @enduml
