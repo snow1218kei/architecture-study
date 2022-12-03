@@ -1,36 +1,42 @@
 @startuml
 
-class User<extends Entity> {
+class User << Entity >> {
  - String name
- - String mailAdress
- - String password
- - []Skill skill
+ - Email email
+ - Password password
+ - []Skill skills
  - String profile
  - Career career
- void limitNameLetters()
- void lmitMailAddressCharacters()
- void limitPasswordCharacters()
- void limitProfileLetters()
 }
 
-class Skill<extends ValueObject> {
- - Enum tag
+class Password << ValueObject >> {
+ - String code
+}
+
+class Email << ValueObject >> {
+ - String mailAddress
+}
+
+class Skill << Entity >> {
+ - []Tag tags
  - int evaluation
  - int years
- void limitEvaluation()
- void lmitYears()
 }
 
-class Career<extends Entity> {
- - String details
- - int fromWhen
- - int toWhen
- void limitDetailsLetters()
- void limitFromWhen()
- void limitToWhen()
+class Tag << ValueObject >> {
+ - String name 
 }
 
+class Career << Entity >> {
+ - String detail
+ - int startYear
+ - int endYear
+}
+
+User "1" -- "1" Email
+User "1" -- "1" Password
 User "1" -- "1" Career
-User "1..*" -- "1..*" Skill
+User "1" -- "1..*" Skill
+Skill "1..*" -- "1..*" Tag
 
 @enduml
