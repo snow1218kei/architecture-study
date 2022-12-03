@@ -1,6 +1,7 @@
 @startuml
 
 class User << Entity >> {
+ - int id
  - String name
  - Email email
  - Password password
@@ -18,6 +19,7 @@ class Email << ValueObject >> {
 }
 
 class Skill << Entity >> {
+ - int id
  - []Tag tags
  - int evaluation
  - int years
@@ -28,6 +30,7 @@ class Tag << ValueObject >> {
 }
 
 class Career << Entity >> {
+ - int id
  - String detail
  - int startYear
  - int endYear
