@@ -1,6 +1,11 @@
 @startuml
 
-class User << Entity >> {
+package "User Aggregate" #DDDDDD {
+  User "1" *-- "1" Career
+  User "1" *-- "1..*" Skill
+}
+
+class User {
  - int id
  - String name
  - Email email
@@ -10,36 +15,140 @@ class User << Entity >> {
  - Career career
 }
 
-class Password << ValueObject >> {
- - String code
-}
-
-class Email << ValueObject >> {
- - String mailAddress
-}
-
-class Skill << Entity >> {
- - int id
- - []Tag tags
- - int evaluation
- - int years
-}
-
-class Tag << ValueObject >> {
- - String name 
-}
-
-class Career << Entity >> {
+class Career {
  - int id
  - String detail
  - int startYear
  - int endYear
 }
 
-User "1" -- "1" Email
-User "1" -- "1" Password
-User "1" -- "1" Career
-User "1" -- "1..*" Skill
-Skill "1..*" -- "1..*" Tag
+class Skill {
+ - int id
+ - []TagId tagIds
+ - int evaluation
+ - int years
+}
+
+note top of User
+ 【 必須項目 ]  
+   - name : 255文字以内
+   - email : 255文字以内
+   - password : 12文字以上, 英数字それぞれ最低1文字以上
+   - skill
+ 【 任意項目 】
+   - profile : 2000字以内
+   - career
+end note
+
+note bottom of Career
+  - detail : 1000字以内
+  - startYear : 1970年以上のint型
+  - endYear : 1970年以上のint型、startYearよりも大きい数字
+end note
+
+note bottom of Skill
+  - tagID : 選択式
+  - evaluation : 1~5
+  - years : ０以上のint型(5年まで)
+end note
+
+package "Mentor Requirement Aggreate" #DDDDDD {
+  MentorRequirement "1" *-- "1..*"  MentoringPropsal
+  MentorRequirement "1..*" --* "1" User
+}
+
+class MentorRequirement {
+ - String title
+ - Enum category
+ - Enum contractType
+ - Enum consultationMethod
+ - string description
+ - int budget
+ - int applicationPeriod
+ - Enum status
+ - []TagId Tagids
+ - UserId userId
+}
+
+class MentoringPropsal {
+ - String content
+ - int userId
+}
+
+note top of MentorRequirement
+  - title : 255文字以内
+  - category : 1つ
+  - contractType : 単発or継続
+  - consultationMethod : チャットorビデオ通話
+  - description : 2000文字以内
+  - budget : from円~to円, 1000円以上の数値
+  - applicationPeriod : 1日単位, 最大14日後まで可能
+  - status : 公開or中止
+end note
+
+note bottom of MentoringPropsal
+  - title : 255文字以内
+  - userId : 提案できるのはスキルを5個以上持つユーザのみ
+end note
+
+package " MentoringPlan Aggreate" #DDDDDD {
+  Contract "1" --* "1" MentoringPlan
+  Message "1" --* "1" MentoringPlan
+  User "1" *-- "1..*" MentoringPlan
+}
+
+class MentoringPlan {
+ - String title
+ - Enum category
+ - []TagId tagIds
+ - string content
+ - Enum status
+ - int pricing
+ - Enum consultationMethod
+ - UserId userId
+ - Contract contract
+ - []Message messages
+}
+
+class Contract {
+ - int[] userIds
+}
+
+class Message {
+ - String text
+ - int userId
+}
+
+note right of MentoringPlan
+【 必須項目 】
+  - content : 255文字以内
+  - category : 
+  - tag 
+  - content : 2000文字以内
+  - status : 公開or中止
+  - pricing :
+【　任意項目 】
+  - consultationMethod : チャットorビデオ電話
+end note
+
+note top of Message
+  - content : 500文字以内
+  - userId : 同じuserId
+end note
+
+note top of Contract
+  - userIds : 2人のみ
+end note
+
+package "Tag Aggreate" #DDDDDD {
+  Skill "1..*" -- "1..*" Tag
+  MentorRequirement "1..*" -- "1..*" Tag
+  MentoringPlan "1..*" -- "1..*" Tag
+}
+
+class Tag {
+ - TagId tagId
+ - String name 
+}
 
 @enduml
