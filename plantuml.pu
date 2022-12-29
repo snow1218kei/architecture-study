@@ -16,14 +16,14 @@ class User {
 }
 
 class Career {
- - int id
+ - CareerId careerId
  - string detail
  - int startYear
  - int endYear
 }
 
 class Skill {
- - int id
+ - SkillId skillId
  - []TagId tagIds
  - int evaluation
  - int years
@@ -57,6 +57,7 @@ package "Mentor Requirement Aggreate" #DDDDDD {
 }
 
 class MentorRequirement {
+ - MentorRequirementId mentorRequirementId
  - string title
  - Category category
  - ContractType contractType
@@ -86,6 +87,7 @@ package "Mentoring Proposal Aggreate" #DDDDDD {
 }
 
 class MentoringProposal {
+ - MentoringProposalId mentoringProposalId
  - string content
  - UserId userId
  - MentorRequirementId mentorRequirementId
@@ -101,6 +103,7 @@ package " MentoringPlan Aggreate" #DDDDDD {
 }
 
 class MentoringPlan {
+ - MentoringPlanId mentoringPlanId
  - string title
  - Category category
  - []TagId tagIds
@@ -130,8 +133,10 @@ package " Contract Aggreate" #DDDDDD {
 }
 
 class Contract {
- - UserId[] userIds
- - MentoringPlan mentoringId
+ - ContactId contactId
+ - UserId mentorId
+ - UserId menteeId
+ - MentoringPlan mentoringPlanId
 }
 
 note top of Contract
