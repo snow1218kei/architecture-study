@@ -1,0 +1,15 @@
+version: '3'
+
+volumes:
+  db-data:
+
+services:
+  db:
+    container_name: architecture_study
+    image: postgres
+    volumes:
+      - 'db-data:/var/lib/postgresql/data'
+    environment:
+      - 'POSTGRES_USER=postgres'
+      - 'POSTGRES_PASSWORD=postgres'
+      - 'POSTGRES_DB=architecture_study'
