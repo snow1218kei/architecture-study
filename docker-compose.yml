@@ -4,6 +4,14 @@ volumes:
   db-data:
 
 services:
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - '.:/app'
+    depends_on:
+      - db
   db:
     container_name: architecture_study
     image: postgres
