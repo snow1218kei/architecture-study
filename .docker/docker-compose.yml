@@ -5,12 +5,14 @@ volumes:
 
 services:
   web:
-    build: .
+    build:
+      context: ../
+      dockerfile: .docker/Dockerfile
     tty: true
     ports:
-      - "8080:8080"
+      - "8080:80"
     volumes:
-      - '.:/app'
+      - '.:/usr/src/app'
     depends_on:
       - db
   db:
