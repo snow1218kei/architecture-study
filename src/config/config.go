@@ -1,1 +1,1 @@
-package hoghoge
+package config
