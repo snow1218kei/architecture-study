@@ -1,21 +1,14 @@
 package main
 
 import (
-	"fmt"
-	"log"
 	"net/http"
+	"log"
 
-	"github.com/julienschmidt/httprouter"
+	"go-module/src/infra/router"
 )
 
-func CheckHelth(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "ヘルスチェックに成功しました。")
-}
-
 func main() {
-	router := httprouter.New()
-	router.GET("/health", CheckHelth)
+	router := router.GetHealth()
 
 	server := http.Server{
 		Addr: "0.0.0.0:80",
