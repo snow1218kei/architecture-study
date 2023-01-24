@@ -4,11 +4,11 @@ import (
 	"net/http"
 	"log"
 
-	"go-module/src/infra/router"
+	"github.com/yuuki-tsujimura/architecture-study/src/infra/router"
 )
 
 func main() {
-	router := router.GetHealth()
+	router := router.Router()
 
 	server := http.Server{
 		Addr: "0.0.0.0:80",

@@ -1,4 +1,4 @@
-module go-module
+module github.com/yuuki-tsujimura/architecture-study
 
 go 1.19
 

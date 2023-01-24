@@ -1,13 +1,10 @@
 package router
 
 import (
-	"go-module/src/interface/controller"
+	"github.com/yuuki-tsujimura/architecture-study/src/interface/controller"
 	"github.com/julienschmidt/httprouter"
 )
 
-func GetHealth() *httprouter.Router {
-	router := httprouter.New()
-	router.GET("/health", controller.CheckHelth)
-
-	return router
+func setHealthRouter(router *httprouter.Router) {
+	router.GET("/health", controller.CheckHelthController)
 }
