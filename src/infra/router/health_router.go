@@ -1,8 +1,8 @@
 package router
 
 import (
-	"github.com/yuuki-tsujimura/architecture-study/src/interface/controller"
 	"github.com/julienschmidt/httprouter"
+	"github.com/yuuki-tsujimura/architecture-study/src/interface/controller"
 )
 
 func setHealthRouter(router *httprouter.Router) {

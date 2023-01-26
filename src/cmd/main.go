@@ -1,8 +1,8 @@
 package main
 
 import (
-	"net/http"
 	"log"
+	"net/http"
 
 	"github.com/yuuki-tsujimura/architecture-study/src/infra/router"
 )
@@ -11,7 +11,7 @@ func main() {
 	router := router.Router()
 
 	server := http.Server{
-		Addr: "0.0.0.0:80",
+		Addr:    "0.0.0.0:80",
 		Handler: router,
 	}
 
