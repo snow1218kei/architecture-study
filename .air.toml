@@ -3,14 +3,14 @@
 # Working directory
 # . or absolute path, please note that the directories following must be under root.
 root = "."
-tmp_dir = "./src/cmd/tmp"
+tmp_dir = "./tmp"
 
 [build]
 # 単なる古いシェルコマンド。`make`を使用することもできます。
-cmd = "go build -o ./tmp/main"
+cmd = "go build -o ./tmp/main ./src/cmd"
 
 # バイナリファイルは`cmd`から生成されます。
-bin = "tmp/main"
+bin = "./tmp/main"
 
 # Customize binary, can setup environment variables when run your app.
 # full_bin = "./tmp/main"
