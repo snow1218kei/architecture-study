@@ -3,20 +3,23 @@ package user
 import (
 	"fmt"
 	"regexp"
+
+	"github.com/yuuki-tsujimura/architecture-study/src/domain/shared"
 )
 
-type Email string
+type Email shared.Email
 
 func NewEmail(email string) (Email, error) {
-	e := Email(email)
-
-	if !e.IsValidEmail() {
-		return e, fmt.Errorf("有効なメールアドレスではありません")
+	if err := IsValidEmail(email); err != nil {
+		return "", err
 	}
-	return e, nil
+	return Email(email), nil
 }
 
-func (email Email) IsValidEmail() bool {
-	var rxEmail = regexp.MustCompile("^[a-zA-Z0-9_.+-]+@([a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*.)+[a-zA-Z]{2,}$")
-	return rxEmail.MatchString(string(email))
+func IsValidEmail(email string) error {
+	rxEmail := regexp.MustCompile(shared.EmailPolicy)
+	if !rxEmail.MatchString(email) {
+			return fmt.Errorf("invalid email address")
+	}
+	return nil
 }

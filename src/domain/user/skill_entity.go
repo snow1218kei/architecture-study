@@ -3,54 +3,53 @@ package user
 import (
 	"fmt"
 
-	"github.com/yuuki-tsujimura/architecture-study/src/domain/id"
-	"github.com/yuuki-tsujimura/architecture-study/src/usecase"
+	"github.com/yuuki-tsujimura/architecture-study/src/domain/shared"
+	tag "github.com/yuuki-tsujimura/architecture-study/src/domain/tag"
 )
 
 type Skill struct {
-	SkillId    id.SkillId
-	TagIds     []id.TagId
-	Evaluation int
-	Years      int
+	skillID    SkillID
+	tagID      tag.TagID
+	evaluation uint16
+	years      uint16
+	createdAt  shared.CreatedAt
 }
 
-func NewSkill(input usecase.Skill) *Skill {
-	skillId := id.NewSkillId()
+type SkillParams struct {
+	TagID      string
+	Evaluation uint16
+	Years      uint16
+}
 
-	var tagIds []id.TagId
-	for _, tagId := range input.TagIds {
-		tagId, _ := id.GetTagId(tagId)
-		tagIds = append(tagIds, tagId)
+func NewSkill(params SkillParams, skillID SkillID, createdAt shared.CreatedAt) (*Skill, error) {
+	if err := validateEvalation(params.Evaluation); err != nil {
+		return nil, err
 	}
-
-	evaluation := input.Evaluation
-	years := input.Years
+	
+	if err := validateYears(params.Years); err != nil {
+		return nil, err
+	}
 
 	skill := &Skill{
-		SkillId:    skillId,
-		TagIds:     tagIds,
-		Evaluation: evaluation,
-		Years:      years,
+		skillID:    skillID,
+		tagID:      tag.TagID(params.TagID),
+		evaluation: params.Evaluation,
+		years:      params.Years,
+		createdAt:  createdAt,
 	}
-
-	skill.validateEvalation()
-	skill.validateYears()
-
-	return skill
+	return skill, nil
 }
 
-func (skill Skill) validateEvalation() error {
-	if skill.Evaluation < 1 || 5 < skill.Evaluation {
+func validateEvalation(evaluation uint16) error {
+	if evaluation < 1 || 5 < evaluation {
 		return fmt.Errorf("評価は1〜5の5段階です")
 	}
-
 	return nil
 }
 
-func (skill Skill) validateYears() error {
-	if skill.Years < 0 || 5 < skill.Years {
-		return fmt.Errorf("0年以上、5年以内で入力してください")
+func validateYears(years uint16) error {
+	if years < 1 || 5 < years {
+		return fmt.Errorf("1年以上、5年以内で入力してください")
 	}
-
 	return nil
 }

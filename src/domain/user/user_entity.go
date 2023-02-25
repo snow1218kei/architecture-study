@@ -2,57 +2,56 @@ package user
 
 import (
 	"fmt"
-
-	"github.com/yuuki-tsujimura/architecture-study/src/domain/id"
-	"github.com/yuuki-tsujimura/architecture-study/src/usecase"
 )
 
 type User struct {
-	UserId   id.UserId
+	userID   UserID
+	name     string
+	email    Email
+	password Password
+	profile  string
+	careers   []*Career
+	skills   []*Skill
+}
+
+type UserParams struct {
 	Name     string
-	Password Password
+	Email    string
+	Password string
 	Profile  string
-	Career   Career
-	Skills   []Skill
 }
 
-func NewUser(input usecase.CreateUserInput) User {
-	userId := id.NewUserId()
-	name, _ := CheckNameLength(input.User.Name)
-	password, _ := NewPassword(input.User.Password)
-	profile, _ := CheckProfileLength(input.User.Profile)
-	career := *NewCareer(input.Career)
-	skills := PrepareSkills(input)
-
-	return User{
-		UserId:   userId,
-		Name:     name,
-		Password: password,
-		Profile:  profile,
-		Career:   career,
-		Skills:   skills,
+func NewUser(userMap map[string]interface{}) (*User, error) {
+	if err := checkNameLength(userMap["name"].(string)); err != nil {
+		return nil, err
 	}
+
+	if err := checkProfileLength(userMap["profile"].(string)); err != nil {
+		return nil, err
+	}
+
+	user := &User{
+		userID:   userMap["userID"].(UserID),
+		name:     userMap["name"].(string),
+		email:    userMap["email"].(Email),
+		password: userMap["password"].(Password),
+		profile:  userMap["profile"].(string),
+		careers:   userMap["careers"].([]*Career),
+		skills:   userMap["skills"].([]*Skill),
+	}
+	return user, nil
 }
 
-func CheckNameLength(name string) (string, error) {
+func checkNameLength(name string) error {
 	if len(name) > 255 {
-		return "", fmt.Errorf("名前は255文字以下である必要があります。(現在%d文字)", len(name))
+		return fmt.Errorf("名前は255文字以下である必要があります。(現在%d文字)", len(name))
 	}
-	return name, nil
+	return nil
 }
 
-func CheckProfileLength(profile string) (string, error) {
+func checkProfileLength(profile string) error {
 	if len(profile) >= 2000 {
-		return "", fmt.Errorf("プロフィールは2000文字以下である必要があります。(現在%d文字)", len(profile))
+		return fmt.Errorf("プロフィールは2000文字以下である必要があります。(現在%d文字)", len(profile))
 	}
-	return profile, nil
-}
-
-func PrepareSkills(input usecase.CreateUserInput) []Skill {
-	var skills []Skill
-
-	for _, skill := range input.Skills {
-		skills = append(skills, *NewSkill(skill))
-	}
-	return skills
+	return nil
 }
