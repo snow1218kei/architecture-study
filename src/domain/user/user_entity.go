@@ -2,16 +2,20 @@ package user
 
 import (
 	"fmt"
+	"unicode/utf8"
+
+	"github.com/yuuki-tsujimura/architecture-study/src/domain/shared"
 )
 
 type User struct {
-	userID   UserID
-	name     string
-	email    Email
-	password Password
-	profile  string
+	userID    UserID
+	name      string
+	email     shared.Email
+	password  Password
+	profile   string
 	careers   []*Career
-	skills   []*Skill
+	skills    []*Skill
+	createdAt shared.CreatedAt
 }
 
 type UserParams struct {
@@ -31,27 +35,28 @@ func NewUser(userMap map[string]interface{}) (*User, error) {
 	}
 
 	user := &User{
-		userID:   userMap["userID"].(UserID),
-		name:     userMap["name"].(string),
-		email:    userMap["email"].(Email),
-		password: userMap["password"].(Password),
-		profile:  userMap["profile"].(string),
+		userID:    userMap["userID"].(UserID),
+		name:      userMap["name"].(string),
+		email:     userMap["email"].(shared.Email),
+		password:  userMap["password"].(Password),
+		profile:   userMap["profile"].(string),
 		careers:   userMap["careers"].([]*Career),
-		skills:   userMap["skills"].([]*Skill),
+		skills:    userMap["skills"].([]*Skill),
+		createdAt: userMap["createdAt"].(shared.CreatedAt),
 	}
 	return user, nil
 }
 
 func checkNameLength(name string) error {
-	if len(name) > 255 {
-		return fmt.Errorf("名前は255文字以下である必要があります。(現在%d文字)", len(name))
+	if utf8.RuneCountInString(name) > 255 {
+		return fmt.Errorf("名前は255文字以下である必要があります。(現在%d文字)", utf8.RuneCountInString(name))
 	}
 	return nil
 }
 
 func checkProfileLength(profile string) error {
-	if len(profile) >= 2000 {
-		return fmt.Errorf("プロフィールは2000文字以下である必要があります。(現在%d文字)", len(profile))
+	if utf8.RuneCountInString(profile) >= 2000 {
+		return fmt.Errorf("プロフィールは2000文字以下である必要があります。(現在%d文字)", utf8.RuneCountInString(profile))
 	}
 	return nil
 }

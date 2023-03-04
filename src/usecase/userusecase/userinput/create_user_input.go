@@ -1,4 +1,4 @@
-package usecase
+package userinput
 
 type CreateUserInput struct {
 	UserInput   UserInput    `json:"user"`

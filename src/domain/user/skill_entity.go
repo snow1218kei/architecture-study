@@ -25,7 +25,7 @@ func NewSkill(params SkillParams, skillID SkillID, createdAt shared.CreatedAt) (
 	if err := validateEvalation(params.Evaluation); err != nil {
 		return nil, err
 	}
-	
+
 	if err := validateYears(params.Years); err != nil {
 		return nil, err
 	}

@@ -7,22 +7,41 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCreatedAt(t *testing.T) {
-		t.Run("TestNewCreatedAt", func(t *testing.T) {
-			createdAt := NewCreatedAt()
-
-			// 現在時刻から作成されたCreatedAtオブジェクトが返されたことを確認する
-			assert.Equal(t, time.Now().UTC().Truncate(time.Second), time.Time(createdAt).UTC().Truncate(time.Second), "expected a new CreatedAt object to be created from the current time")
+func TestNewCreatedAt(t *testing.T) {
+	tests := []struct {
+		name      string
+		createdAt CreatedAt
+	}{
+		{
+			name:      "NewCreatedAt",
+			createdAt: NewCreatedAt(),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			now := time.Now()
+			if now.Before(tt.createdAt.Value()) {
+				t.Errorf("NewCreatedAt() returned invalid value: %v", tt.createdAt.Value())
+			}
 		})
+	}
+}
 
-		// t.Run("TestString", func(t *testing.T) {
-		// 		createdAt := NewCreatedAt()
-		// 		assert.True(t, reflect.TypeOf(createdAt.String()).Kind() == reflect.String)
-		// })
-
-		t.Run("TestEaqual", func(t *testing.T) {
-				createdAtID1 := NewCreatedAt()
-				createdAtID2 := createdAtID1
-				assert.True(t, createdAtID1.Equal(createdAtID2))
+func TestCreatedAt_Value(t *testing.T) {
+	tests := []struct {
+		name      string
+		createdAt CreatedAt
+		expected  time.Time
+	}{
+		{
+			name:      "Value()",
+			createdAt: CreatedAt(time.Now()),
+			expected:  time.Now(),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.expected, tt.createdAt.Value())
 		})
+	}
 }

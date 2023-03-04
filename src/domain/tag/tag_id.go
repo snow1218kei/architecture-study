@@ -7,7 +7,7 @@ import (
 type TagID string
 
 func NewTagID() TagID {
-  return TagID(uuid.New().String())
+	return TagID(uuid.New().String())
 }
 
 func (tagId TagID) String() string {

@@ -1,28 +1,49 @@
 package user
 
 import (
-	"reflect"
 	"testing"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCareerID(t *testing.T) {
-	t.Run("TestNewCareerID", func(t *testing.T) {
-		careerID := NewCareerID()
-		_, err := uuid.Parse(careerID.String())
-		assert.Nil(t, err)
-	})
+func TestNewCareerID(t *testing.T) {
+	tests := []struct {
+		name string
+		careerID CareerID
+	}{
+		{
+			name:   "NewUserID + String",
+			careerID: NewCareerID(),
+		},
+	}
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			_, err := uuid.Parse(tt.careerID.String())
+			assert.Nil(t, err, "Expected no error, but got an error")
+		})
+	}
+}
 
-	t.Run("TestString", func(t *testing.T) {
-		careerID := NewCareerID()
-		assert.True(t, reflect.TypeOf(careerID.String()).Kind() == reflect.String)
-	})
-
-	t.Run("TestEaqual", func(t *testing.T) {
-		careerID1 := NewCareerID()
-		careerID2 := careerID1
-		assert.True(t, careerID1.Equal(careerID2))
-	})
+func TestCareerID_Equal(t *testing.T) {
+	tests := []struct {
+		name    string
+		careerID CareerID
+	}{
+		{
+			name:   "Equal",
+			careerID: NewCareerID(),
+		},
+	}
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			careerID1 := tt.careerID
+			careerID2 := careerID1
+			assert.True(t, careerID1.Equal(careerID2), "Expected careerID1 and careerID2 to be equal, but they were not")
+		})
+	}
 }

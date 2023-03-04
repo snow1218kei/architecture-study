@@ -1,10 +1,11 @@
-package usecase
+package userusecase
 
 import (
 	"encoding/json"
 	"fmt"
 
 	"github.com/yuuki-tsujimura/architecture-study/src/domain/user"
+	"github.com/yuuki-tsujimura/architecture-study/src/usecase/userusecase/userinput"
 )
 
 func CreateUser() {
@@ -41,7 +42,7 @@ func CreateUser() {
 		]
 	}`
 
-	var input CreateUserInput
+	var input userinput.CreateUserInput
 	err := json.Unmarshal([]byte(inputJSON), &input)
 	if err != nil {
 		fmt.Println(err)

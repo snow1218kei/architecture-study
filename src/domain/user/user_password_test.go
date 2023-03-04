@@ -7,25 +7,48 @@ import (
 )
 
 func TestNewPassword(t *testing.T) {
-	t.Run("有効な入力値の場合, Password型の文字列を返す", func(t *testing.T) {
-		expected := Password("abc123456def")
-		actual, err := NewPassword("abc123456def")
-		assert.Nil(t, err, "Expected no error, but got an error")
-		assert.Equal(t, expected, actual, "Expected %s but got %s", expected, actual)
-	})
+	tests := []struct {
+		testCase string
+		password string
+		expected Password
+		wantErr  string
+	}{
+		{
+			testCase: "有効な入力値の場合",
+			password: "abc123456def",
+			expected: Password("abc123456def"),
+			wantErr:  "",
+		},
+		{
+			testCase: "入力値が12文字以下の場合",
+			password: "abcde",
+			expected: Password(""),
+			wantErr:  "文字数は最低12文字以上でなければなりません",
+		},
+		{
+			testCase: "英字が1文字も含まれていない場合",
+			password: "123456789012333",
+			expected: Password(""),
+			wantErr:  "英字が最低1文字は含まれていなければなりません",
+		},
+		{
+			testCase: "数字が1文字も含まれていない場合",
+			password: "abcdefghijkjjj",
+			expected: Password(""),
+			wantErr:  "数字が最低1文字は含まれていなければなりません",
+		},
+	}
 
-	t.Run("入力値が12文字以下の場合, エラーを返す", func(t *testing.T) {
-		_, err := NewPassword("abcde")
-		assert.EqualError(t, err, "文字数は最低12文字以上でなければなりません")
-	})
-
-	t.Run("英字が1文字も含まれていない場合, エラーを返す", func(t *testing.T) {
-		_, err := NewPassword("123456789012333")
-		assert.EqualError(t, err, "英字が最低1文字は含まれていなければなりません")
-	})
-
-	t.Run("数字が1文字も含まれていない場合, エラーを返す", func(t *testing.T) {
-		_, err := NewPassword("abcdefghijkjjj")
-		assert.EqualError(t, err, "数字が最低1文字は含まれていなければなりません")
-	})
+	for _, test := range tests {
+		t.Run(test.testCase, func(t *testing.T) {
+			got, err := NewPassword(test.password)
+			if test.wantErr != "" {
+				assert.Empty(t, got)
+				assert.EqualError(t, err, test.wantErr)
+			} else {
+				assert.NoError(t, err)
+				assert.Equal(t, test.expected, got)
+			}
+		})
+	}
 }

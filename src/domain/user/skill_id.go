@@ -7,7 +7,7 @@ import (
 type SkillID string
 
 func NewSkillID() SkillID {
-  return SkillID(uuid.New().String())
+	return SkillID(uuid.New().String())
 }
 
 func (skillId SkillID) String() string {

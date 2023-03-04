@@ -9,18 +9,18 @@ type UserAggregateFactory struct {
 }
 
 func (factory UserAggregateFactory) CreateUserAggregate() (*User, error) {
-	email, err := NewEmail(factory.UserParams.Email)
+	email, err := shared.NewEmail(factory.UserParams.Email)
 	password, err := NewPassword(factory.UserParams.Password)
 	careers, err := prepareCareers(factory.CareersParams, shared.NewCreatedAt())
 	skills, err := prepareSkills(factory.SkillsParams, shared.NewCreatedAt())
 	userMap := map[string]interface{}{
-		"userID":   NewUserID(),
-		"name":     factory.UserParams.Name,
-		"email":    email,
-		"password": password,
-		"profile":  factory.UserParams.Profile,
-		"careers":  careers,
-		"skills":   skills,
+		"userID":    NewUserID(),
+		"name":      factory.UserParams.Name,
+		"email":     email,
+		"password":  password,
+		"profile":   factory.UserParams.Profile,
+		"careers":   careers,
+		"skills":    skills,
 		"createdAt": shared.NewCreatedAt(),
 	}
 	user, err := NewUser(userMap)

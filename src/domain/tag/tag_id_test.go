@@ -1,28 +1,49 @@
 package tag
 
 import (
-	"reflect"
 	"testing"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestTagID(t *testing.T) {
-	t.Run("TestNewTagID", func(t *testing.T) {
-		tagID := NewTagID()
-		_, err := uuid.Parse(tagID.String())
-		assert.Nil(t, err)
-	})
+func TestNewTagID(t *testing.T) {
+	tests := []struct {
+		name string
+		tagID TagID
+	}{
+		{
+			name:   "NewUserID + String",
+			tagID: NewTagID(),
+		},
+	}
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			_, err := uuid.Parse(tt.tagID.String())
+			assert.Nil(t, err, "Expected no error, but got an error")
+		})
+	}
+}
 
-	t.Run("TestString", func(t *testing.T) {
-		tagID := NewTagID()
-		assert.True(t, reflect.TypeOf(tagID).Kind() == reflect.String)
-	})
-
-	t.Run("TestEaqual", func(t *testing.T) {
-		tagID1 := NewTagID()
-		tagID2 := tagID1
-		assert.True(t, tagID1.Equal(tagID2))
-	})
+func TestTagID_Equal(t *testing.T) {
+	tests := []struct {
+		name    string
+		tagID TagID
+	}{
+		{
+			name:   "Equal",
+			tagID: NewTagID(),
+		},
+	}
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			tagID1 := tt.tagID
+			tagID2 := tagID1
+			assert.True(t, tagID1.Equal(tagID2), "Expected tagID1 and tagID2 to be equal, but they were not")
+		})
+	}
 }
