@@ -3,7 +3,7 @@ package user
 import (
 	"fmt"
 
-	"github.com/yuuki-tsujimura/architecture-study/src/domain/shared"
+	shared "github.com/yuuki-tsujimura/architecture-study/src/domain/shared/vo"
 	tag "github.com/yuuki-tsujimura/architecture-study/src/domain/tag"
 )
 
@@ -21,7 +21,7 @@ type SkillParams struct {
 	Years      uint16
 }
 
-func NewSkill(params SkillParams, skillID SkillID, createdAt shared.CreatedAt) (*Skill, error) {
+func newSkill(params *SkillParams, skillID SkillID, createdAt shared.CreatedAt) (*Skill, error) {
 	if err := validateEvalation(params.Evaluation); err != nil {
 		return nil, err
 	}

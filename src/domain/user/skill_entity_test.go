@@ -1,43 +1,38 @@
-package user
+package user_test
 
 import (
 	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/yuuki-tsujimura/architecture-study/src/domain/shared"
+	shared "github.com/yuuki-tsujimura/architecture-study/src/domain/shared/vo"
 	tag "github.com/yuuki-tsujimura/architecture-study/src/domain/tag"
+	"github.com/yuuki-tsujimura/architecture-study/src/domain/user"
 )
 
 func TestNewSkill(t *testing.T) {
-	skillID := NewSkillID()
+	skillID := user.NewSkillID()
 	createdAt := shared.NewCreatedAt()
 
 	tests := []struct {
 		testCase string
-		params   SkillParams
-		expected *Skill
+		params   *user.SkillParams
+		expected *user.Skill
 		wantErr  error
 	}{
 		{
 			testCase: "有効なparamsの場合",
-			params: SkillParams{
+			params: &user.SkillParams{
 				TagID:      "1",
 				Evaluation: 3,
 				Years:      2,
 			},
-			expected: &Skill{
-				skillID:    skillID,
-				tagID:      tag.TagID("1"),
-				evaluation: 3,
-				years:      2,
-				createdAt:  createdAt,
-			},
+			expected: user.GenSkillForTest(skillID, tag.TagID("1"), 3, 2, createdAt),
 			wantErr: nil,
 		},
 		{
 			testCase: "Evaluationが1未満の場合",
-			params: SkillParams{
+			params: &user.SkillParams{
 				TagID:      "1",
 				Evaluation: 0,
 				Years:      2,
@@ -47,7 +42,7 @@ func TestNewSkill(t *testing.T) {
 		},
 		{
 			testCase: "Evaluationが5を超える場合",
-			params: SkillParams{
+			params: &user.SkillParams{
 				TagID:      "1",
 				Evaluation: 6,
 				Years:      2,
@@ -57,7 +52,7 @@ func TestNewSkill(t *testing.T) {
 		},
 		{
 			testCase: "Yearsが1年未満の場合",
-			params: SkillParams{
+			params: &user.SkillParams{
 				TagID:      "1",
 				Evaluation: 3,
 				Years:      0,
@@ -67,7 +62,7 @@ func TestNewSkill(t *testing.T) {
 		},
 		{
 			testCase: "Yearsが5を超える場合",
-			params: SkillParams{
+			params: &user.SkillParams{
 				TagID:      "1",
 				Evaluation: 3,
 				Years:      6,
@@ -79,7 +74,7 @@ func TestNewSkill(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.testCase, func(t *testing.T) {
-			skill, err := NewSkill(test.params, skillID, createdAt)
+			skill, err := user.NewSkill(test.params, skillID, createdAt)
 
 			assert.Equal(t, test.expected, skill)
 			assert.Equal(t, test.wantErr, err)

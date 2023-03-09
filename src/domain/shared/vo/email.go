@@ -12,13 +12,13 @@ const (
 type Email string
 
 func NewEmail(email string) (Email, error) {
-	if err := IsValidEmail(email); err != nil {
+	if err := isValidEmail(email); err != nil {
 		return "", err
 	}
 	return Email(email), nil
 }
 
-func IsValidEmail(email string) error {
+func isValidEmail(email string) error {
 	rxEmail := regexp.MustCompile(emailPolicy)
 	if !rxEmail.MatchString(email) {
 		return fmt.Errorf("無効なEmailアドレスです")

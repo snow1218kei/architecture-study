@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"unicode/utf8"
 
-	"github.com/yuuki-tsujimura/architecture-study/src/domain/shared"
+	shared "github.com/yuuki-tsujimura/architecture-study/src/domain/shared/vo"
 )
 
 type Career struct {
@@ -21,7 +21,7 @@ type CareerParams struct {
 	EndYear   uint16
 }
 
-func NewCareer(params CareerParams, careerID CareerID, createdAt shared.CreatedAt) (*Career, error) {
+func newCareer(params *CareerParams, careerID CareerID, createdAt shared.CreatedAt) (*Career, error) {
 	if err := checkDetailLength(params.Detail); err != nil {
 		return nil, err
 	}

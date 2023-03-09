@@ -1,6 +1,9 @@
 package user
 
-import "github.com/yuuki-tsujimura/architecture-study/src/domain/shared"
+import (
+	shared "github.com/yuuki-tsujimura/architecture-study/src/domain/shared/vo"
+	tag "github.com/yuuki-tsujimura/architecture-study/src/domain/tag"
+)
 
 type UserAggregateFactory struct {
 	UserParams    UserParams
@@ -10,20 +13,19 @@ type UserAggregateFactory struct {
 
 func (factory UserAggregateFactory) CreateUserAggregate() (*User, error) {
 	email, err := shared.NewEmail(factory.UserParams.Email)
-	password, err := NewPassword(factory.UserParams.Password)
+	password, err := newPassword(factory.UserParams.Password)
 	careers, err := prepareCareers(factory.CareersParams, shared.NewCreatedAt())
 	skills, err := prepareSkills(factory.SkillsParams, shared.NewCreatedAt())
-	userMap := map[string]interface{}{
-		"userID":    NewUserID(),
-		"name":      factory.UserParams.Name,
-		"email":     email,
-		"password":  password,
-		"profile":   factory.UserParams.Profile,
-		"careers":   careers,
-		"skills":    skills,
-		"createdAt": shared.NewCreatedAt(),
+	userInput := UserInput{
+		Name:      factory.UserParams.Name,
+		Email:     email,
+		Password:  password,
+		Profile:   factory.UserParams.Profile,
+		Careers:   careers,
+		Skills:    skills,
+		CreatedAt: shared.NewCreatedAt(),
 	}
-	user, err := NewUser(userMap)
+	user, err := newUser(userInput)
 	if err != nil {
 		return nil, err
 	}
@@ -33,7 +35,7 @@ func (factory UserAggregateFactory) CreateUserAggregate() (*User, error) {
 func prepareCareers(careersParams []CareerParams, createdAt shared.CreatedAt) ([]*Career, error) {
 	var careers []*Career
 	for _, careerParams := range careersParams {
-		career, err := NewCareer(careerParams, NewCareerID(), createdAt)
+		career, err := newCareer(&careerParams, newCareerID(), createdAt)
 		if err != nil {
 			return nil, err
 		}
@@ -45,11 +47,70 @@ func prepareCareers(careersParams []CareerParams, createdAt shared.CreatedAt) ([
 func prepareSkills(skillsParams []SkillParams, createdAt shared.CreatedAt) ([]*Skill, error) {
 	var skills []*Skill
 	for _, skillParams := range skillsParams {
-		skill, err := NewSkill(skillParams, NewSkillID(), createdAt)
+		skill, err := newSkill(&skillParams, newSkillID(), createdAt)
 		if err != nil {
 			return nil, err
 		}
 		skills = append(skills, skill)
 	}
 	return skills, nil
+}
+
+func GenCareerForTest(careerID CareerID, detail string, startYear uint16, endYear uint16, createdAt shared.CreatedAt) *Career {
+  return &Career{
+		careerID:  careerID,
+		detail:    detail,
+		startYear: startYear,
+		endYear:   endYear,
+		createdAt: createdAt,
+	}
+}
+
+func GenSkillForTest(skillID SkillID, tagID tag.TagID, evaluation uint16, years uint16, createdAt shared.CreatedAt) *Skill {
+  return &Skill{
+		skillID:    skillID,
+		tagID:      tagID,
+		evaluation: evaluation,
+		years:      years,
+		createdAt:  createdAt,
+	}
+}
+
+func GenCareersForTest(careerID CareerID, detail string, startYear uint16, endYear uint16, createdAt shared.CreatedAt) []*Career {
+  return []*Career{{
+		careerID:  careerID,
+		detail:    detail,
+		startYear: startYear,
+		endYear:   endYear,
+		createdAt: createdAt,
+	}}
+}
+
+func GenSkillsForTest(skillID SkillID, tagID tag.TagID, evaluation uint16, years uint16, createdAt shared.CreatedAt) []*Skill {
+  return []*Skill{{
+		skillID:    skillID,
+		tagID:      tagID,
+		evaluation: evaluation,
+		years:      years,
+		createdAt:  createdAt,
+	}}
+}
+
+func GenUserForTest(userID UserID, name string, email shared.Email, password Password, profile string, careers []*Career, skills []*Skill, createdAt shared.CreatedAt) *User {
+  return 	&User{
+		userID:    userID,
+		name:      name,
+		email:     email,
+		password:  password,
+		profile:   profile,
+		careers:   careers,
+		skills:    skills,
+		createdAt: createdAt,
+	}
+}
+
+func GenFactoryForTest(userParams UserParams, careerParams []CareerParams, skillParams []SkillParams, user *User) *User {
+	careers := GenCareersForTest(user.careers[0].careerID , careerParams[0].Detail, careerParams[0].StartYear, careerParams[0].EndYear, user.careers[0].createdAt)
+	skills := GenSkillsForTest(user.skills[0].skillID , tag.TagID(skillParams[0].TagID), skillParams[0].Evaluation, skillParams[0].Years, user.skills[0].createdAt)
+  return GenUserForTest(user.userID, userParams.Name, shared.Email(userParams.Email), Password(userParams.Password), userParams.Profile, careers, skills, user.createdAt)
 }

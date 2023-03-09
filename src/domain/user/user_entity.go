@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"unicode/utf8"
 
-	"github.com/yuuki-tsujimura/architecture-study/src/domain/shared"
+	shared "github.com/yuuki-tsujimura/architecture-study/src/domain/shared/vo"
 )
 
 type User struct {
@@ -25,24 +25,35 @@ type UserParams struct {
 	Profile  string
 }
 
-func NewUser(userMap map[string]interface{}) (*User, error) {
-	if err := checkNameLength(userMap["name"].(string)); err != nil {
+type UserInput struct {
+	UserID    UserID
+	Name      string
+	Email     shared.Email
+	Password  Password
+	Profile   string
+	Careers   []*Career
+	Skills    []*Skill
+	CreatedAt shared.CreatedAt
+}
+
+func newUser(userInput UserInput) (*User, error) {
+	if err := checkNameLength(userInput.Name); err != nil {
 		return nil, err
 	}
 
-	if err := checkProfileLength(userMap["profile"].(string)); err != nil {
+	if err := checkProfileLength(userInput.Profile); err != nil {
 		return nil, err
 	}
 
 	user := &User{
-		userID:    userMap["userID"].(UserID),
-		name:      userMap["name"].(string),
-		email:     userMap["email"].(shared.Email),
-		password:  userMap["password"].(Password),
-		profile:   userMap["profile"].(string),
-		careers:   userMap["careers"].([]*Career),
-		skills:    userMap["skills"].([]*Skill),
-		createdAt: userMap["createdAt"].(shared.CreatedAt),
+		userID:    userInput.UserID,
+		name:      userInput.Name,
+		email:     userInput.Email,
+		password:  userInput.Password,
+		profile:   userInput.Profile,
+		careers:   userInput.Careers,
+		skills:    userInput.Skills,
+		createdAt: userInput.CreatedAt,
 	}
 	return user, nil
 }

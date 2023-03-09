@@ -1,4 +1,4 @@
-package user
+package user_test
 
 import (
 	"errors"
@@ -6,38 +6,33 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/yuuki-tsujimura/architecture-study/src/domain/shared"
+	shared "github.com/yuuki-tsujimura/architecture-study/src/domain/shared/vo"
+	"github.com/yuuki-tsujimura/architecture-study/src/domain/user"
 )
 
 func TestNewCareer(t *testing.T) {
-	careerID := NewCareerID()
+	careerID := user.NewCareerID()
 	createdAt := shared.NewCreatedAt()
 
 	tests := []struct {
 		testCase string
-		params   CareerParams
-		expected *Career
+		params   *user.CareerParams
+		expected *user.Career
 		wantErr  error
 	}{
 		{
 			testCase: "有効なparamsの場合, career構造体のオブジェクトを返す",
-			params: CareerParams{
+			params: &user.CareerParams{
 				Detail:    "Software Engineer",
 				StartYear: 2015,
 				EndYear:   2022,
 			},
-			expected: &Career{
-				careerID:  careerID,
-				detail:    "Software Engineer",
-				startYear: 2015,
-				endYear:   2022,
-				createdAt: createdAt,
-			},
+			expected: user.GenCareerForTest(careerID, "Software Engineer", 2015, 2022, createdAt),
 			wantErr: nil,
 		},
 		{
 			testCase: "Detailが長過ぎる場合, エラーを返す",
-			params: CareerParams{
+			params: &user.CareerParams{
 				Detail:    strings.Repeat("s", 256),
 				StartYear: 2015,
 				EndYear:   2022,
@@ -47,7 +42,7 @@ func TestNewCareer(t *testing.T) {
 		},
 		{
 			testCase: "StartYearが1970年未満の場合, エラーを返す",
-			params: CareerParams{
+			params: &user.CareerParams{
 				Detail:    "Software Engineer",
 				StartYear: 1969,
 				EndYear:   2022,
@@ -57,7 +52,7 @@ func TestNewCareer(t *testing.T) {
 		},
 		{
 			testCase: "EndYearが1970年未満の場合, エラーを返す",
-			params: CareerParams{
+			params: &user.CareerParams{
 				Detail:    "Software Engineer",
 				StartYear: 2015,
 				EndYear:   1969,
@@ -67,7 +62,7 @@ func TestNewCareer(t *testing.T) {
 		},
 		{
 			testCase: "EndYearがStartYear以下の場合, エラーを返す",
-			params: CareerParams{
+			params: &user.CareerParams{
 				Detail:    "Software Engineer",
 				StartYear: 2022,
 				EndYear:   2015,
@@ -79,7 +74,7 @@ func TestNewCareer(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.testCase, func(t *testing.T) {
-			career, err := NewCareer(test.params, careerID, createdAt)
+			career, err := user.NewCareer(test.params, careerID, createdAt)
 
 			assert.Equal(t, test.expected, career)
 			assert.Equal(t, test.wantErr, err)

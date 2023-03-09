@@ -1,20 +1,21 @@
-package tag
+package tag_test
 
 import (
 	"testing"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/yuuki-tsujimura/architecture-study/src/domain/tag"
 )
 
 func TestNewTagID(t *testing.T) {
 	tests := []struct {
 		name string
-		tagID TagID
+		tagID tag.TagID
 	}{
 		{
 			name:   "NewUserID + String",
-			tagID: NewTagID(),
+			tagID: tag.NewTagID(),
 		},
 	}
 	for _, tt := range tests {
@@ -27,14 +28,50 @@ func TestNewTagID(t *testing.T) {
 	}
 }
 
+func TestNewTagIDByVal(t *testing.T) {
+	testCases := []struct {
+		name      string
+		val       string
+		expected  tag.TagID
+		expectErr bool
+	}{
+		{
+			name:      "有効な値の場合",
+			val:       "123",
+			expected:  tag.TagID("123"),
+			expectErr: false,
+		},
+		{
+			name:      "空の値の場合",
+			val:       "",
+			expected:  tag.TagID(""),
+			expectErr: true,
+		},
+	}
+
+	for _, tt := range testCases {
+		t.Run(tt.name, func(t *testing.T) {
+			tagID, err := tag.NewTagIDByVal(tt.val)
+
+			if tt.expectErr {
+				assert.Error(t, err)
+				assert.Equal(t, tt.expected, tagID)
+			} else {
+				assert.NoError(t, err)
+				assert.Equal(t, tt.expected, tagID)
+			}
+		})
+	}
+}
+
 func TestTagID_Equal(t *testing.T) {
 	tests := []struct {
 		name    string
-		tagID TagID
+		tagID tag.TagID
 	}{
 		{
 			name:   "Equal",
-			tagID: NewTagID(),
+			tagID: tag.NewTagID(),
 		},
 	}
 	for _, tt := range tests {
