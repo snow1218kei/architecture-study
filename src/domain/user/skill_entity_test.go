@@ -21,7 +21,7 @@ func TestNewSkill(t *testing.T) {
 		wantErr  error
 	}{
 		{
-			testCase: "有効なparamsの場合",
+			testCase: "正常系：有効なparamsの場合",
 			params: &user.SkillParams{
 				TagID:      "1",
 				Evaluation: 3,
@@ -31,7 +31,7 @@ func TestNewSkill(t *testing.T) {
 			wantErr: nil,
 		},
 		{
-			testCase: "Evaluationが1未満の場合",
+			testCase: "異常系：Evaluationが1未満の場合",
 			params: &user.SkillParams{
 				TagID:      "1",
 				Evaluation: 0,
@@ -41,7 +41,7 @@ func TestNewSkill(t *testing.T) {
 			wantErr:  errors.New("評価は1〜5の5段階です"),
 		},
 		{
-			testCase: "Evaluationが5を超える場合",
+			testCase: "異常系：Evaluationが5を超える場合",
 			params: &user.SkillParams{
 				TagID:      "1",
 				Evaluation: 6,
@@ -51,7 +51,7 @@ func TestNewSkill(t *testing.T) {
 			wantErr:  errors.New("評価は1〜5の5段階です"),
 		},
 		{
-			testCase: "Yearsが1年未満の場合",
+			testCase: "異常系：Yearsが1年未満の場合",
 			params: &user.SkillParams{
 				TagID:      "1",
 				Evaluation: 3,
@@ -61,7 +61,7 @@ func TestNewSkill(t *testing.T) {
 			wantErr:  errors.New("1年以上、5年以内で入力してください"),
 		},
 		{
-			testCase: "Yearsが5を超える場合",
+			testCase: "異常系：Yearsが5を超える場合",
 			params: &user.SkillParams{
 				TagID:      "1",
 				Evaluation: 3,
@@ -69,6 +69,16 @@ func TestNewSkill(t *testing.T) {
 			},
 			expected: nil,
 			wantErr:  errors.New("1年以上、5年以内で入力してください"),
+		},
+		{
+			testCase: "異常系：TagIDが空の場合",
+			params: &user.SkillParams{
+				TagID:      "",
+				Evaluation: 3,
+				Years:      2,
+			},
+			expected: nil,
+			wantErr:  errors.New("tagID must not be empty"),
 		},
 	}
 

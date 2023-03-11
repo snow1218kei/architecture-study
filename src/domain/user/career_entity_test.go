@@ -21,7 +21,7 @@ func TestNewCareer(t *testing.T) {
 		wantErr  error
 	}{
 		{
-			testCase: "有効なparamsの場合, career構造体のオブジェクトを返す",
+			testCase: "正常系：有効なparamsの場合, career構造体のオブジェクトを返す",
 			params: &user.CareerParams{
 				Detail:    "Software Engineer",
 				StartYear: 2015,
@@ -31,7 +31,7 @@ func TestNewCareer(t *testing.T) {
 			wantErr: nil,
 		},
 		{
-			testCase: "Detailが長過ぎる場合, エラーを返す",
+			testCase: "異常系：Detailが長過ぎる場合, エラーを返す",
 			params: &user.CareerParams{
 				Detail:    strings.Repeat("s", 256),
 				StartYear: 2015,
@@ -41,7 +41,7 @@ func TestNewCareer(t *testing.T) {
 			wantErr:  errors.New("detailは255文字以下である必要があります。(現在256文字)"),
 		},
 		{
-			testCase: "StartYearが1970年未満の場合, エラーを返す",
+			testCase: "異常系：StartYearが1970年未満の場合, エラーを返す",
 			params: &user.CareerParams{
 				Detail:    "Software Engineer",
 				StartYear: 1969,
@@ -51,7 +51,7 @@ func TestNewCareer(t *testing.T) {
 			wantErr:  errors.New("startYearは1970年以上である必要があります"),
 		},
 		{
-			testCase: "EndYearが1970年未満の場合, エラーを返す",
+			testCase: "異常系：EndYearが1970年未満の場合, エラーを返す",
 			params: &user.CareerParams{
 				Detail:    "Software Engineer",
 				StartYear: 2015,
@@ -61,7 +61,7 @@ func TestNewCareer(t *testing.T) {
 			wantErr:  errors.New("endYearは1970年以上であり、startYearより後の数値である必要があります"),
 		},
 		{
-			testCase: "EndYearがStartYear以下の場合, エラーを返す",
+			testCase: "異常系：EndYearがStartYear以下の場合, エラーを返す",
 			params: &user.CareerParams{
 				Detail:    "Software Engineer",
 				StartYear: 2022,

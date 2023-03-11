@@ -34,14 +34,13 @@ func newCareer(params *CareerParams, careerID CareerID, createdAt shared.Created
 		return nil, err
 	}
 
-	career := &Career{
+	return &Career{
 		careerID:  careerID,
 		detail:    params.Detail,
 		startYear: params.StartYear,
 		endYear:   params.EndYear,
 		createdAt: createdAt,
-	}
-	return career, nil
+	}, nil
 }
 
 func checkDetailLength(detail string) error {

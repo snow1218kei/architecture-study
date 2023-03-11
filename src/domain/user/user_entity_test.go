@@ -30,7 +30,7 @@ func TestNewUser(t *testing.T) {
 		wantError error
 	}{
 		{
-			testCase: "有効なparamsの場合",
+			testCase: "正常系：有効なparamsの場合",
 			input: user.UserInput{
 				UserID:    userID,
 				Name:      userParams.Name,
@@ -45,7 +45,7 @@ func TestNewUser(t *testing.T) {
 			wantError: nil,
 		},
 		{
-			testCase: "nameが長過ぎる場合",
+			testCase: "異常系：nameが長過ぎる場合",
 			input: user.UserInput{
 				UserID:    userID,
 				Name:      strings.Repeat("s", 400),
@@ -60,7 +60,7 @@ func TestNewUser(t *testing.T) {
 			wantError: errors.New("名前は255文字以下である必要があります。(現在400文字)"),
 		},
 		{
-			testCase: "profileが長過ぎる場合",
+			testCase: "異常系：profileが長過ぎる場合",
 			input: user.UserInput{
 				UserID:    userID,
 				Name:      "test user",

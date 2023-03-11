@@ -45,7 +45,7 @@ func newUser(userInput UserInput) (*User, error) {
 		return nil, err
 	}
 
-	user := &User{
+	return &User{
 		userID:    userInput.UserID,
 		name:      userInput.Name,
 		email:     userInput.Email,
@@ -54,8 +54,7 @@ func newUser(userInput UserInput) (*User, error) {
 		careers:   userInput.Careers,
 		skills:    userInput.Skills,
 		createdAt: userInput.CreatedAt,
-	}
-	return user, nil
+	}, nil
 }
 
 func checkNameLength(name string) error {

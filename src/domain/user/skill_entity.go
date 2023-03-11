@@ -30,14 +30,18 @@ func newSkill(params *SkillParams, skillID SkillID, createdAt shared.CreatedAt) 
 		return nil, err
 	}
 
-	skill := &Skill{
+	tagID, err := tag.NewTagIDByVal(params.TagID)
+	if err != nil {
+			return nil, err
+	}
+
+	return &Skill{
 		skillID:    skillID,
-		tagID:      tag.TagID(params.TagID),
+		tagID:      tagID,
 		evaluation: params.Evaluation,
 		years:      params.Years,
 		createdAt:  createdAt,
-	}
-	return skill, nil
+	}, nil
 }
 
 func validateEvalation(evaluation uint16) error {

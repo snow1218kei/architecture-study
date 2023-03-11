@@ -14,7 +14,7 @@ func TestNewUserID(t *testing.T) {
 		userID user.UserID
 	}{
 		{
-			name:   "NewUserID + String",
+			name:   "正常系：NewUserID + String",
 			userID: user.NewUserID(),
 		},
 	}
@@ -36,13 +36,13 @@ func TestNewUserIDByVal(t *testing.T) {
 		expectErr bool
 	}{
 		{
-			name:      "有効な値の場合",
+			name:      "正常系：有効な値の場合",
 			val:       "123",
 			expected:  user.UserID("123"),
 			expectErr: false,
 		},
 		{
-			name:      "空の値の場合",
+			name:      "異常系：空の値の場合",
 			val:       "",
 			expected:  user.UserID(""),
 			expectErr: true,
@@ -70,7 +70,7 @@ func TestUserID_Equal(t *testing.T) {
 		userID user.UserID
 	}{
 		{
-			name:   "Equal",
+			name:   "正常系",
 			userID: user.NewUserID(),
 		},
 	}

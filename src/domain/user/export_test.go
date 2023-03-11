@@ -1,9 +1,11 @@
 package user
 
-var NewUser = newUser
-var NewCareer = newCareer
-var NewSkill = newSkill
-var NewUserID = newUserID
-var NewCareerID = newCareerID
-var NewSkillID = newSkillID
-var NewPassword = newPassword
+var (
+	NewUser = newUser
+	NewCareer = newCareer
+	NewSkill = newSkill
+	NewUserID = newUserID
+	NewCareerID = newCareerID
+	NewSkillID = newSkillID
+	NewPassword = newPassword
+)
