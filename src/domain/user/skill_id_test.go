@@ -14,7 +14,7 @@ func TestNewSkillID(t *testing.T) {
 		skillID user.SkillID
 	}{
 		{
-			name:   "NewSkillID + String",
+			name:   "正常系：NewSkillID + String",
 			skillID: user.NewSkillID(),
 		},
 	}
@@ -36,13 +36,13 @@ func TestNewSkillIDByVal(t *testing.T) {
 		expectErr bool
 	}{
 		{
-			name:      "有効な値の場合",
+			name:      "正常系：有効な値の場合",
 			val:       "123",
 			expected:  user.SkillID("123"),
 			expectErr: false,
 		},
 		{
-			name:      "空の値の場合",
+			name:      "異常系：空の値の場合",
 			val:       "",
 			expected:  user.SkillID(""),
 			expectErr: true,
@@ -70,7 +70,7 @@ func TestSkillID_Equal(t *testing.T) {
 		skillID user.SkillID
 	}{
 		{
-			name:   "Equal",
+			name:   "正常系",
 			skillID: user.NewSkillID(),
 		},
 	}
