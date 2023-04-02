@@ -35,11 +35,12 @@ func (m *MockUserRepository) EXPECT() *MockUserRepositoryMockRecorder {
 }
 
 // FindByName mocks base method.
-func (m *MockUserRepository) FindByName(arg0 string) error {
+func (m *MockUserRepository) FindByName(arg0 string) (*user.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindByName", arg0)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].(*user.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // FindByName indicates an expected call of FindByName.

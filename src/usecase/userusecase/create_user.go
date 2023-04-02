@@ -19,21 +19,12 @@ func NewCreateUserUseCase(userRepo user.UserRepository) *CreateUserUseCase {
 }
 
 func (usercase *CreateUserUseCase) Exec(ctx context.Context, input *userinput.CreateUserInput) error {
-	err := checkUserNameExistence(input.UserInput.Name, usercase.userRepo)
+	err := user.CheckUserNameExistence(input.UserInput.Name, usercase.userRepo)
   user, err := createUser(input)
 	err = saveUser(user, usercase.userRepo)
 
 	if err != nil {
 		return err
-	}
-	return nil
-}
-
-func checkUserNameExistence(name string, userRepo user.UserRepository) error {
-	err := userRepo.FindByName(name)
-
-	if err != nil {
-		return fmt.Errorf("既に存在するユーザ名です")
 	}
 	return nil
 }
@@ -66,13 +57,7 @@ func createUser(input *userinput.CreateUserInput) (*user.User, error) {
 		skillsParams = append(skillsParams, skillParams)
 	}
 
-	userAggregateFactory := user.UserAggregateFactory{
-		UserParams:     userParams,
-		CareersParams:  careersParams,
-		SkillsParams:   skillsParams,
-	}
-
-	user, err := userAggregateFactory.CreateUserAggregate()
+	user, err := user.CreateUserAggregate(userParams, careersParams, skillsParams)
 	
 	if err != nil {
 		return nil, fmt.Errorf("ユーザの作成に失敗しました")

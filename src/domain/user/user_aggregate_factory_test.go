@@ -41,12 +41,7 @@ func TestCreateUserAggregate(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			userAggregateFactory := user.UserAggregateFactory{
-				UserParams:    tt.userParams,
-				CareersParams: tt.careersParams,
-				SkillsParams:  tt.skillsParams,
-			}
-			createdUser, err := userAggregateFactory.CreateUserAggregate()
+			createdUser, err := user.CreateUserAggregate(tt.userParams, tt.careersParams, tt.skillsParams)
 			userForTest := user.GenFactoryForTest(tt.userParams, tt.careersParams, tt.skillsParams, createdUser)
 
 			assert.NoError(t, err)

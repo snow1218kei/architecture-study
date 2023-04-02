@@ -5,22 +5,16 @@ import (
 	tag "github.com/yuuki-tsujimura/architecture-study/src/domain/tag"
 )
 
-type UserAggregateFactory struct {
-	UserParams    UserParams
-	CareersParams []CareerParams
-	SkillsParams  []SkillParams
-}
-
-func (factory UserAggregateFactory) CreateUserAggregate() (*User, error) {
-	email, err := shared.NewEmail(factory.UserParams.Email)
-	password, err := newPassword(factory.UserParams.Password)
-	careers, err := prepareCareers(factory.CareersParams, shared.NewCreatedAt())
-	skills, err := prepareSkills(factory.SkillsParams, shared.NewCreatedAt())
+func CreateUserAggregate(userParams  UserParams, careersParams []CareerParams, skillsParams []SkillParams) (*User, error) {
+	email, err := shared.NewEmail(userParams.Email)
+	password, err := newPassword(userParams.Password)
+	careers, err := prepareCareers(careersParams, shared.NewCreatedAt())
+	skills, err := prepareSkills(skillsParams, shared.NewCreatedAt())
 	userInput := UserInput{
-		Name:      factory.UserParams.Name,
+		Name:      userParams.Name,
 		Email:     email,
 		Password:  password,
-		Profile:   factory.UserParams.Profile,
+		Profile:   userParams.Profile,
 		Careers:   careers,
 		Skills:    skills,
 		CreatedAt: shared.NewCreatedAt(),

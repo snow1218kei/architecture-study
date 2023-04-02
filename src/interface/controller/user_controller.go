@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
-	user "github.com/yuuki-tsujimura/architecture-study/src/infra/db/user"
+	repoimpl "github.com/yuuki-tsujimura/architecture-study/src/infra/db/user"
 	"github.com/yuuki-tsujimura/architecture-study/src/usecase/userusecase"
 	"github.com/yuuki-tsujimura/architecture-study/src/usecase/userusecase/userinput"
 )
@@ -25,7 +25,7 @@ func CreateUserController(w http.ResponseWriter, r *http.Request, _ httprouter.P
 		return
 	}
 
-	repository := user.NewRdbUserRepository()
+	repository := repoimpl.NewRdbUserRepository()
 	createUserUsecase := userusecase.NewCreateUserUseCase(repository)
 	err = createUserUsecase.Exec(r.Context(), &input)
 	if err != nil {
