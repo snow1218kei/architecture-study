@@ -5,6 +5,7 @@ go 1.19
 require github.com/julienschmidt/httprouter v1.3.1-0.20220603155159-34250257ea14
 
 require (
+	github.com/golang/mock v1.6.0
 	github.com/google/uuid v1.3.0
 	github.com/stretchr/testify v1.8.1
 )

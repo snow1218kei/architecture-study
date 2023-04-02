@@ -1,68 +1,69 @@
 package userusecase
 
 import (
-	"encoding/json"
+	"context"
 	"fmt"
 
 	"github.com/yuuki-tsujimura/architecture-study/src/domain/user"
 	"github.com/yuuki-tsujimura/architecture-study/src/usecase/userusecase/userinput"
 )
 
-func CreateUser() {
-	inputJSON := `{
-		"user": {
-			"name": "John Doe",
-			"email": "johndoe@example.com",
-			"password": "secret",
-			"profile": "Software Engineer"
-		},
-		"careers": [
-			{
-				"detail": "Working as a software engineer at XYZ Inc.",
-				"startYear": 2018,
-				"endYear": 2022
-			},
-			{
-				"detail": "Worked as a software developer at ABC Ltd.",
-				"startYear": 2015,
-				"endYear": 2018
-			}
-		],
-		"skills": [
-			{
-				"tagId": 1,
-				"evaluation": 4,
-				"year": 5
-			},
-			{
-				"tagId": 2,
-				"evaluation": 3,
-				"year": 3
-			}
-		]
-	}`
+type CreateUserUseCase struct {
+  userRepo user.UserRepository
+}
 
-	var input userinput.CreateUserInput
-	err := json.Unmarshal([]byte(inputJSON), &input)
+func NewCreateUserUseCase(userRepo user.UserRepository) *CreateUserUseCase {
+  return &CreateUserUseCase {
+    userRepo,
+  }
+}
+
+func (usercase *CreateUserUseCase) Exec(ctx context.Context, input *userinput.CreateUserInput) error {
+	err := checkUserNameExistence(input.UserInput.Name, usercase.userRepo)
+  user, err := createUser(input)
+	err = saveUser(user, usercase.userRepo)
+
 	if err != nil {
-		fmt.Println(err)
-		return
+		return err
 	}
+	return nil
+}
 
-	userParams := user.UserParams{Name: input.UserInput.Name, Email: input.UserInput.Email, Password: input.UserInput.Password, Profile: input.UserInput.Profile}
+func checkUserNameExistence(name string, userRepo user.UserRepository) error {
+	err := userRepo.FindByName(name)
+
+	if err != nil {
+		return fmt.Errorf("既に存在するユーザ名です")
+	}
+	return nil
+}
+
+func createUser(input *userinput.CreateUserInput) (*user.User, error) {
+	userParams := user.UserParams{
+		Name: input.UserInput.Name,
+		Email: input.UserInput.Email,
+		Password: input.UserInput.Password,
+		Profile: input.UserInput.Profile,
+	}
 
 	var careersParams []user.CareerParams
 	for _, careerInput := range input.CareersInput {
-
-		careerParams :=	user.CareerParams{Detail: careerInput.Detail, StartYear: careerInput.StartYear, EndYear: careerInput.EndYear}
-			careersParams = append(careersParams, careerParams)
+		careerParams :=	user.CareerParams{
+			Detail: careerInput.Detail, 
+			StartYear: careerInput.StartYear, 
+			EndYear: careerInput.EndYear,
+		}
+		careersParams = append(careersParams, careerParams)
 	}
 
 	var skillsParams []user.SkillParams
 	for _, skillInput := range input.SkillsInput {
-
-		skillParams :=	user.SkillParams{TagID: skillInput.TagID, Evaluation: skillInput.Evaluation, Years: skillInput.Years}
-			skillsParams = append(skillsParams, skillParams)
+		skillParams :=	user.SkillParams{
+			TagID: skillInput.TagID, 
+			Evaluation: skillInput.Evaluation, 
+			Years: skillInput.Years,
+		}
+		skillsParams = append(skillsParams, skillParams)
 	}
 
 	userAggregateFactory := user.UserAggregateFactory{
@@ -71,5 +72,19 @@ func CreateUser() {
 		SkillsParams:   skillsParams,
 	}
 
-	userAggregateFactory.CreateUserAggregate()
+	user, err := userAggregateFactory.CreateUserAggregate()
+	
+	if err != nil {
+		return nil, fmt.Errorf("ユーザの作成に失敗しました")
+	}
+	return user, nil
+}
+
+func saveUser(user *user.User, userRepo user.UserRepository) error {
+	err := userRepo.Store(user)
+
+	if err != nil {
+		return fmt.Errorf("ユーザの登録に失敗しました")
+	}
+	return nil
 }
