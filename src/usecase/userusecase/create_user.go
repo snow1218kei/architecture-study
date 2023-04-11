@@ -19,9 +19,9 @@ func NewCreateUserUseCase(userRepo user.UserRepository) *CreateUserUseCase {
 }
 
 func (usercase *CreateUserUseCase) Exec(ctx context.Context, input *userinput.CreateUserInput) error {
-	err := user.CheckUserNameExistence(input.UserInput.Name, usercase.userRepo)
+	err := user.CheckUserNameExistence(ctx, input.UserInput.Name, usercase.userRepo)
   user, err := createUser(input)
-	err = saveUser(user, usercase.userRepo)
+	err = saveUser(ctx, user, usercase.userRepo)
 
 	if err != nil {
 		return err
@@ -65,8 +65,8 @@ func createUser(input *userinput.CreateUserInput) (*user.User, error) {
 	return user, nil
 }
 
-func saveUser(user *user.User, userRepo user.UserRepository) error {
-	err := userRepo.Store(user)
+func saveUser(ctx context.Context, user *user.User, userRepo user.UserRepository) error {
+	err := userRepo.Store(ctx, user)
 
 	if err != nil {
 		return fmt.Errorf("ユーザの登録に失敗しました")

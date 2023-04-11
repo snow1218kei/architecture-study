@@ -1,6 +1,7 @@
 package userusecase_test
 
 import (
+	"context"
 	"errors"
 	"testing"
 
@@ -37,7 +38,7 @@ func TestSaveUser(t *testing.T) {
 				userRepo: mockRepo,
 			},
 			mockFunc: func() {
-				mockRepo.EXPECT().Store(&user.User{}).Return(nil)
+				mockRepo.EXPECT().Store(context.Background(), &user.User{}).Return(nil)
 			},
 			expectedError: nil,
 		},
@@ -48,7 +49,7 @@ func TestSaveUser(t *testing.T) {
 				userRepo: mockRepo,
 			},
 			mockFunc: func() {
-				mockRepo.EXPECT().Store(&user.User{}).Return(errors.New("error"))
+				mockRepo.EXPECT().Store(context.Background(), &user.User{}).Return(errors.New("error"))
 			},
 			expectedError:  errors.New("ユーザの登録に失敗しました"),
 		},
@@ -57,7 +58,7 @@ func TestSaveUser(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			tc.mockFunc()
-			err := userusecase.SaveUser(tc.args.user, tc.args.userRepo)
+			err := userusecase.SaveUser(context.Background(), tc.args.user, tc.args.userRepo)
 			assert.Equal(t, tc.expectedError, err)
 		})
 	}

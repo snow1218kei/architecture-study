@@ -1,6 +1,10 @@
 package user
 
+import (
+	"context"
+)
+
 type UserRepository interface {
-	Store(*User) error
-	FindByName(string) (*User, error)
+	Store(context.Context, *User) error
+	FindByName(context.Context, string) (*User, error)
 }

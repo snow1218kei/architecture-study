@@ -1,6 +1,7 @@
 package user
 
 import (
+	"context"
 	"fmt"
 	"log"
 
@@ -20,12 +21,12 @@ func NewRdbUserRepository() *RdbUserRepository {
 	}
 }
 
-func (repo *RdbUserRepository) Store(u *user.User) error {
+func (repo *RdbUserRepository) Store(ctx context.Context, u *user.User) error {
 	repo.users = append(repo.users, u)
 	return nil
 }
 
-func (repo *RdbUserRepository) FindByName(name string) (*user.User, error) {
+func (repo *RdbUserRepository) FindByName(ctx context.Context, name string) (*user.User, error) {
 	db, err := sqlx.Open("postgresql", "root/sample")
 	rows, err := db.Queryx("SELECT * FROM users WHERE name = $1 LIMIT 1", name)
 	if err != nil {

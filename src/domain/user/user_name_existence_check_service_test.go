@@ -1,6 +1,7 @@
 package user_test
 
 import (
+	"context"
 	"errors"
 	"testing"
 
@@ -26,7 +27,7 @@ func TestCheckUserNameExistence(t *testing.T) {
 			name:     "正常系：存在しないユーザー名の場合",
 			userName: "non_existing_user",
 			mockFunc: func() {
-				mockRepo.EXPECT().FindByName("non_existing_user").Return(nil, nil)
+				mockRepo.EXPECT().FindByName(context.Background(), "non_existing_user").Return(nil, nil)
 			},
 			expectedError: nil,
 		},
@@ -34,7 +35,7 @@ func TestCheckUserNameExistence(t *testing.T) {
 			name:     "異常系：存在するユーザー名の場合",
 			userName: "existing_user",
 			mockFunc: func() {
-				mockRepo.EXPECT().FindByName("existing_user").Return(&user.User{}, errors.New(""))
+				mockRepo.EXPECT().FindByName(context.Background(), "existing_user").Return(&user.User{}, errors.New(""))
 			},
 			expectedError: errors.New("既に存在するユーザ名です"),
 		},
@@ -43,7 +44,7 @@ func TestCheckUserNameExistence(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			tc.mockFunc()
-			err := user.CheckUserNameExistence(tc.userName, mockRepo)
+			err := user.CheckUserNameExistence(context.Background(), tc.userName, mockRepo)
 			assert.Equal(t, tc.expectedError, err)
 		})
 	}
