@@ -13,7 +13,7 @@ const (
 
 type Password string
 
-func newPassword(password string) (Password, error) {
+func NewPassword(password string) (Password, error) {
 	if err := validatePasswordLength(password); err != nil {
 		return "", err
 	}

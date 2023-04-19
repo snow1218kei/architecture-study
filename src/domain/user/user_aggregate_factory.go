@@ -5,9 +5,9 @@ import (
 	tag "github.com/yuuki-tsujimura/architecture-study/src/domain/tag"
 )
 
-func CreateUserAggregate(userParams  UserParams, careersParams []CareerParams, skillsParams []SkillParams) (*User, error) {
+func CreateUserAggregate(userParams UserParams, careersParams []CareerParams, skillsParams []SkillParams) (*User, error) {
 	email, err := shared.NewEmail(userParams.Email)
-	password, err := newPassword(userParams.Password)
+	password, err := NewPassword(userParams.Password)
 	careers, err := prepareCareers(careersParams, shared.NewCreatedAt())
 	skills, err := prepareSkills(skillsParams, shared.NewCreatedAt())
 	userInput := UserInput{
@@ -51,7 +51,7 @@ func prepareSkills(skillsParams []SkillParams, createdAt shared.CreatedAt) ([]*S
 }
 
 func GenCareerForTest(careerID CareerID, detail string, startYear uint16, endYear uint16, createdAt shared.CreatedAt) *Career {
-  return &Career{
+	return &Career{
 		careerID:  careerID,
 		detail:    detail,
 		startYear: startYear,
@@ -61,7 +61,7 @@ func GenCareerForTest(careerID CareerID, detail string, startYear uint16, endYea
 }
 
 func GenSkillForTest(skillID SkillID, tagID tag.TagID, evaluation uint16, years uint16, createdAt shared.CreatedAt) *Skill {
-  return &Skill{
+	return &Skill{
 		skillID:    skillID,
 		tagID:      tagID,
 		evaluation: evaluation,
@@ -71,7 +71,7 @@ func GenSkillForTest(skillID SkillID, tagID tag.TagID, evaluation uint16, years 
 }
 
 func GenCareersForTest(careerID CareerID, detail string, startYear uint16, endYear uint16, createdAt shared.CreatedAt) []*Career {
-  return []*Career{{
+	return []*Career{{
 		careerID:  careerID,
 		detail:    detail,
 		startYear: startYear,
@@ -81,7 +81,7 @@ func GenCareersForTest(careerID CareerID, detail string, startYear uint16, endYe
 }
 
 func GenSkillsForTest(skillID SkillID, tagID tag.TagID, evaluation uint16, years uint16, createdAt shared.CreatedAt) []*Skill {
-  return []*Skill{{
+	return []*Skill{{
 		skillID:    skillID,
 		tagID:      tagID,
 		evaluation: evaluation,
@@ -91,7 +91,7 @@ func GenSkillsForTest(skillID SkillID, tagID tag.TagID, evaluation uint16, years
 }
 
 func GenUserForTest(userID UserID, name string, email shared.Email, password Password, profile string, careers []*Career, skills []*Skill, createdAt shared.CreatedAt) *User {
-  return 	&User{
+	return &User{
 		userID:    userID,
 		name:      name,
 		email:     email,
@@ -104,7 +104,7 @@ func GenUserForTest(userID UserID, name string, email shared.Email, password Pas
 }
 
 func GenFactoryForTest(userParams UserParams, careerParams []CareerParams, skillParams []SkillParams, user *User) *User {
-	careers := GenCareersForTest(user.careers[0].careerID , careerParams[0].Detail, careerParams[0].StartYear, careerParams[0].EndYear, user.careers[0].createdAt)
-	skills := GenSkillsForTest(user.skills[0].skillID , tag.TagID(skillParams[0].TagID), skillParams[0].Evaluation, skillParams[0].Years, user.skills[0].createdAt)
-  return GenUserForTest(user.userID, userParams.Name, shared.Email(userParams.Email), Password(userParams.Password), userParams.Profile, careers, skills, user.createdAt)
+	careers := GenCareersForTest(user.careers[0].careerID, careerParams[0].Detail, careerParams[0].StartYear, careerParams[0].EndYear, user.careers[0].createdAt)
+	skills := GenSkillsForTest(user.skills[0].skillID, tag.TagID(skillParams[0].TagID), skillParams[0].Evaluation, skillParams[0].Years, user.skills[0].createdAt)
+	return GenUserForTest(user.userID, userParams.Name, shared.Email(userParams.Email), Password(userParams.Password), userParams.Profile, careers, skills, user.createdAt)
 }

@@ -12,13 +12,13 @@ import (
 var ErrInternalServer = errors.New("internal server error")
 
 type CreateUserUseCase struct {
-  userRepo user.UserRepository
+	userRepo user.UserRepository
 }
 
 func NewCreateUserUseCase(userRepo user.UserRepository) *CreateUserUseCase {
-  return &CreateUserUseCase {
-    userRepo,
-  }
+	return &CreateUserUseCase{
+		userRepo,
+	}
 }
 
 func (usercase *CreateUserUseCase) Exec(ctx context.Context, input *userinput.CreateUserInput) error {
@@ -27,7 +27,7 @@ func (usercase *CreateUserUseCase) Exec(ctx context.Context, input *userinput.Cr
 		return err
 	}
 
-  user, err := createUser(input)
+	user, err := createUser(input)
 	if err != nil {
 		return err
 	}
@@ -36,7 +36,7 @@ func (usercase *CreateUserUseCase) Exec(ctx context.Context, input *userinput.Cr
 	if err != nil {
 		return err
 	}
-	
+
 	return nil
 }
 
@@ -54,37 +54,36 @@ func checkUserNameExistence(ctx context.Context, name string, userRepo user.User
 	return nil
 }
 
-
 func createUser(input *userinput.CreateUserInput) (*user.User, error) {
 	userParams := user.UserParams{
-		Name: input.UserInput.Name,
-		Email: input.UserInput.Email,
+		Name:     input.UserInput.Name,
+		Email:    input.UserInput.Email,
 		Password: input.UserInput.Password,
-		Profile: input.UserInput.Profile,
+		Profile:  input.UserInput.Profile,
 	}
 
 	var careersParams []user.CareerParams
 	for _, careerInput := range input.CareersInput {
-		careerParams :=	user.CareerParams{
-			Detail: careerInput.Detail, 
-			StartYear: careerInput.StartYear, 
-			EndYear: careerInput.EndYear,
+		careerParams := user.CareerParams{
+			Detail:    careerInput.Detail,
+			StartYear: careerInput.StartYear,
+			EndYear:   careerInput.EndYear,
 		}
 		careersParams = append(careersParams, careerParams)
 	}
 
 	var skillsParams []user.SkillParams
 	for _, skillInput := range input.SkillsInput {
-		skillParams :=	user.SkillParams{
-			TagID: skillInput.TagID, 
-			Evaluation: skillInput.Evaluation, 
-			Years: skillInput.Years,
+		skillParams := user.SkillParams{
+			TagID:      skillInput.TagID,
+			Evaluation: skillInput.Evaluation,
+			Years:      skillInput.Years,
 		}
 		skillsParams = append(skillsParams, skillParams)
 	}
 
 	user, err := user.CreateUserAggregate(userParams, careersParams, skillsParams)
-	
+
 	if err != nil {
 		return nil, fmt.Errorf("ユーザの作成に失敗しました")
 	}
