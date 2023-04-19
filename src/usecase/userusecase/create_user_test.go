@@ -13,68 +13,23 @@ import (
 	"github.com/yuuki-tsujimura/architecture-study/src/usecase/userusecase/userinput"
 )
 
-func TestSaveUser(t *testing.T) {
+func TestExec(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
 	mockRepo := mock_user.NewMockUserRepository(ctrl)
 
-	type args struct {
-		user     *user.User
-		userRepo user.UserRepository
-	}
-	type testCase struct {
-		name          string
-		args          args
-		mockFunc      func()
-		expectedError error
-	}
-
-	testCases := []testCase{
-		{
-			name: "正常系: ユーザの登録に成功する場合",
-			args: args{
-				user: &user.User{},
-				userRepo: mockRepo,
-			},
-			mockFunc: func() {
-				mockRepo.EXPECT().Store(context.Background(), &user.User{}).Return(nil)
-			},
-			expectedError: nil,
-		},
-		{
-			name: "異常系: ユーザの登録に失敗する場合",
-			args: args{
-				user: &user.User{},
-				userRepo: mockRepo,
-			},
-			mockFunc: func() {
-				mockRepo.EXPECT().Store(context.Background(), &user.User{}).Return(errors.New("error"))
-			},
-			expectedError:  errors.New("ユーザの登録に失敗しました"),
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			tc.mockFunc()
-			err := userusecase.SaveUser(context.Background(), tc.args.user, tc.args.userRepo)
-			assert.Equal(t, tc.expectedError, err)
-		})
-	}
-}
-
-func TestCreateUser(t *testing.T) {
-	cases := []struct {
+	testCases := []struct {
 		name          string
 		input         *userinput.CreateUserInput
+		mockFunc      func()
 		expectedError error
 	}{
 		{
-			name: "正常系：ユーザの作成に成功する場合",
+			name: "正常系: ユーザの登録に成功する場合",
 			input: &userinput.CreateUserInput{
 				UserInput: userinput.UserInput{
-					Name:     "testuser",
+					Name:     "non_existing_user",
 					Email:    "testuser@example.com",
 					Password: "password",
 					Profile:  "test profile",
@@ -94,13 +49,107 @@ func TestCreateUser(t *testing.T) {
 					},
 				},
 			},
+			mockFunc: func() {
+				mockRepo.EXPECT().Store(context.Background(), &user.User{}).Return(nil)
+			},
 			expectedError: nil,
+		},
+		{
+			name: "異常系: ユーザ名が既に存在する場合",
+			input: &userinput.CreateUserInput{
+				UserInput: userinput.UserInput{
+					Name:     "existing_user",
+					Email:    "testuser@example.com",
+					Password: "password",
+					Profile:  "test profile",
+				},
+				CareersInput: []*userinput.CareerInput{
+					{
+						Detail:    "test career",
+						StartYear: 2022,
+						EndYear:   2023,
+					},
+				},
+				SkillsInput: []*userinput.SkillInput{
+					{
+						TagID:      "1",
+						Evaluation: 3,
+						Years:      1,
+					},
+				},
+			},
+			mockFunc: func() {
+				mockRepo.EXPECT().FindByName(context.Background(), "existing_user").Return(&user.User{}, nil)
+			},
+			expectedError: errors.New("存在しているので他の名前でお願いします"),
+		},
+		{
+			name: "異常系: 存在チェック時にサーバーエラーが起きた場合",
+			input: &userinput.CreateUserInput{
+				UserInput: userinput.UserInput{
+					Name:     "non_existing_user",
+					Email:    "testuser@example.com",
+					Password: "password",
+					Profile:  "test profile",
+				},
+				CareersInput: []*userinput.CareerInput{
+					{
+						Detail:    "test career",
+						StartYear: 2022,
+						EndYear:   2023,
+					},
+				},
+				SkillsInput: []*userinput.SkillInput{
+					{
+						TagID:      "1",
+						Evaluation: 3,
+						Years:      1,
+					},
+				},
+			},
+			mockFunc: func() {
+				mockRepo.EXPECT().FindByName(context.Background(), "non_existing_user").Return(nil, errors.New("server error"))
+			},
+			expectedError: userusecase.ErrInternalServer,
+		},
+		{
+			name: "異常系: ユーザの登録に失敗する場合",
+			input: &userinput.CreateUserInput{
+				UserInput: userinput.UserInput{
+					Name:     "non_existing_user",
+					Email:    "testuser@example.com",
+					Password: "password",
+					Profile:  "test profile",
+				},
+				CareersInput: []*userinput.CareerInput{
+					{
+						Detail:    "test career",
+						StartYear: 2022,
+						EndYear:   2023,
+					},
+				},
+				SkillsInput: []*userinput.SkillInput{
+					{
+						TagID:      "1",
+						Evaluation: 3,
+						Years:      1,
+					},
+				},
+			},
+			mockFunc: func() {
+				mockRepo.EXPECT().Store(context.Background(), &user.User{}).Return(errors.New("error"))
+			},
+			expectedError:  errors.New("ユーザの登録に失敗しました"),
 		},
 	}
 
-	for _, tc := range cases {
+	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			_, err := userusecase.CreateUser(tc.input)
+			tc.mockFunc()
+
+			userUsecase := userusecase.NewCreateUserUseCase(mockRepo)
+			err := userUsecase.Exec(context.Background(), tc.input)
+
 			assert.Equal(t, tc.expectedError, err)
 		})
 	}

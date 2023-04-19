@@ -2,11 +2,14 @@ package userusecase
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/yuuki-tsujimura/architecture-study/src/domain/user"
 	"github.com/yuuki-tsujimura/architecture-study/src/usecase/userusecase/userinput"
 )
+
+var ErrInternalServer = errors.New("internal server error")
 
 type CreateUserUseCase struct {
   userRepo user.UserRepository
@@ -19,15 +22,38 @@ func NewCreateUserUseCase(userRepo user.UserRepository) *CreateUserUseCase {
 }
 
 func (usercase *CreateUserUseCase) Exec(ctx context.Context, input *userinput.CreateUserInput) error {
-	err := user.CheckUserNameExistence(ctx, input.UserInput.Name, usercase.userRepo)
-  user, err := createUser(input)
-	err = saveUser(ctx, user, usercase.userRepo)
-
+	err := checkUserNameExistence(ctx, input.UserInput.Name, usercase.userRepo)
 	if err != nil {
 		return err
 	}
+
+  user, err := createUser(input)
+	if err != nil {
+		return err
+	}
+
+	err = saveUser(ctx, user, usercase.userRepo)
+	if err != nil {
+		return err
+	}
+	
 	return nil
 }
+
+func checkUserNameExistence(ctx context.Context, name string, userRepo user.UserRepository) error {
+	isExistByNameService := user.NewIsExistByNameService(userRepo)
+	isExist, err := isExistByNameService.Exec(ctx, name)
+	if err != nil {
+		// サーバ側のエラーとして返す
+		return ErrInternalServer
+	}
+	if isExist {
+		// BadRequestを返す
+		return fmt.Errorf("存在しているので他の名前でお願いします")
+	}
+	return nil
+}
+
 
 func createUser(input *userinput.CreateUserInput) (*user.User, error) {
 	userParams := user.UserParams{

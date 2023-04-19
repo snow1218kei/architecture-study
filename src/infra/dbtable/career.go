@@ -15,7 +15,7 @@ func createCareerTable() {
     }
     defer db.Close()
 
-    createTableQuery := `CREATE TABLE IF NOT EXISTS users (
+    createTableQuery := `CREATE TABLE IF NOT EXISTS careers (
 			career_id    SERIAL PRIMARY KEY,
 			user_id      INTEGER NOT NULL REFERENCES users(user_id),
 			detail       TEXT,
