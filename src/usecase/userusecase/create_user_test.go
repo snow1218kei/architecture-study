@@ -2,10 +2,12 @@ package userusecase_test
 
 import (
 	"context"
+	"errors"
 	"testing"
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
+	"github.com/yuuki-tsujimura/architecture-study/src/domain/user"
 	mock_user "github.com/yuuki-tsujimura/architecture-study/src/mock"
 	"github.com/yuuki-tsujimura/architecture-study/src/usecase/userusecase"
 	"github.com/yuuki-tsujimura/architecture-study/src/usecase/userusecase/userinput"
@@ -53,7 +55,6 @@ func TestExec(t *testing.T) {
 			},
 			expectedError: nil,
 		},
-		/*
 			{
 				name: "異常系: ユーザ名が既に存在する場合",
 				input: &userinput.CreateUserInput{
@@ -78,8 +79,10 @@ func TestExec(t *testing.T) {
 						},
 					},
 				},
-				mockFunc: func() {
-					mockRepo.EXPECT().FindByName(context.Background(), "existing_user").Return(&user.User{}, nil)
+				mockFunc: func() *mock_user.MockUserRepository {
+					mockRepo := mock_user.NewMockUserRepository(ctrl)
+					mockRepo.EXPECT().FindByName(ctx, "existing_user").Return(&user.User{}, nil)
+					return mockRepo
 				},
 				expectedError: errors.New("存在しているので他の名前でお願いします"),
 			},
@@ -107,8 +110,10 @@ func TestExec(t *testing.T) {
 						},
 					},
 				},
-				mockFunc: func() {
-					mockRepo.EXPECT().FindByName(context.Background(), "non_existing_user").Return(nil, errors.New("server error"))
+				mockFunc: func() *mock_user.MockUserRepository {
+					mockRepo := mock_user.NewMockUserRepository(ctrl)
+					mockRepo.EXPECT().FindByName(ctx, "non_existing_user").Return(nil, errors.New("server error"))
+					return mockRepo
 				},
 				expectedError: userusecase.ErrInternalServer,
 			},
@@ -136,12 +141,14 @@ func TestExec(t *testing.T) {
 						},
 					},
 				},
-				mockFunc: func() {
-					mockRepo.EXPECT().Store(context.Background(), &user.User{}).Return(errors.New("error"))
+				mockFunc: func() *mock_user.MockUserRepository {
+					mockRepo := mock_user.NewMockUserRepository(ctrl)
+					mockRepo.EXPECT().Store(ctx, gomock.Any()).Return(errors.New("error"))
+					mockRepo.EXPECT().FindByName(ctx, "non_existing_user").Return(nil, nil)
+					return mockRepo
 				},
 				expectedError:  errors.New("ユーザの登録に失敗しました"),
 			},
-		*/
 	}
 
 	for _, tc := range testCases {

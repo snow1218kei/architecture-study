@@ -5,7 +5,7 @@ import (
 )
 
 type Career struct {
-	ID        int       `db:"career_id"`
+	ID        string       `db:"career_id"`
 	UserID    int       `db:"user_id"`
 	Detail    string    `db:"detail"`
 	StartYear int       `db:"start_year"`

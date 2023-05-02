@@ -2,6 +2,7 @@ package user
 
 import (
 	"fmt"
+	"time"
 	"unicode/utf8"
 
 	shared "github.com/yuuki-tsujimura/architecture-study/src/domain/shared/vo"
@@ -36,6 +37,17 @@ type UserInput struct {
 	CreatedAt shared.CreatedAt
 }
 
+type UserData struct {
+	UserID    string
+	Name      string
+	Email     string
+	Password  string
+	Profile   string
+	Careers   []*CareerData
+	Skills    []*SkillData
+	CreatedAt time.Time
+}
+
 func newUser(userInput UserInput) (*User, error) {
 	if err := checkNameLength(userInput.Name); err != nil {
 		return nil, err
@@ -55,6 +67,32 @@ func newUser(userInput UserInput) (*User, error) {
 		skills:    userInput.Skills,
 		createdAt: userInput.CreatedAt,
 	}, nil
+}
+
+func ReconstructUserFromData(userData UserData) (*User, error) {
+	return &User{
+		userID:    UserID(userData.UserID),
+		name:      userData.Name,
+		email:     shared.Email(userData.Email),
+		password:  Password(userData.Password),
+		profile:   userData.Profile,
+		careers:   ReconstructCareersFromData(userData.Careers),
+		skills:    ReconstructSkillsFromData(userData.Skills),
+		createdAt: shared.CreatedAt(userData.CreatedAt),
+	}, nil
+}
+
+func ConvertUserToUserData(user *User) UserData {
+	return UserData{
+		UserID:    user.userID.String(),
+		Name:      user.name,
+		Email:     string(user.email),
+		Password:  string(user.password),
+		Profile:   user.profile,
+		Careers:   ConvertCareersToCareerData(user.careers),
+		Skills:    ConvertSkillsToSkillData(user.skills),
+		CreatedAt: user.createdAt.Value(),
+	}
 }
 
 func checkNameLength(name string) error {

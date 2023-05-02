@@ -2,6 +2,7 @@ package user
 
 import (
 	"fmt"
+	"time"
 	"unicode/utf8"
 
 	shared "github.com/yuuki-tsujimura/architecture-study/src/domain/shared/vo"
@@ -19,6 +20,14 @@ type CareerParams struct {
 	Detail    string
 	StartYear uint16
 	EndYear   uint16
+}
+
+type CareerData struct {
+	CareerID  string
+	Detail    string
+	StartYear int
+	EndYear   *int
+	CreatedAt time.Time
 }
 
 func newCareer(params *CareerParams, careerID CareerID, createdAt shared.CreatedAt) (*Career, error) {
@@ -41,6 +50,52 @@ func newCareer(params *CareerParams, careerID CareerID, createdAt shared.Created
 		endYear:   params.EndYear,
 		createdAt: createdAt,
 	}, nil
+}
+
+func ReconstructCareersFromData(careersData []*CareerData) ([]*Career) {
+	careers := make([]*Career, len(careersData))
+
+	for i, careerData := range careersData {
+		var endYear uint16
+		if careerData.EndYear != nil {
+			endYear = uint16(*careerData.EndYear)
+		}
+
+		careers[i] = &Career{
+			careerID:  CareerID(careerData.CareerID),
+			detail:    careerData.Detail,
+			startYear: uint16(careerData.StartYear),
+			endYear:   endYear,
+			createdAt: shared.CreatedAt(careerData.CreatedAt),
+		}
+	}
+
+	return careers
+}
+
+func ConvertCareersToCareerData(careers []*Career) []*CareerData {
+	careersData := make([]*CareerData, len(careers))
+
+	for i, career := range careers {
+		endYear := int(career.endYear)
+		if endYear == 0 {
+			endYear = -1
+		}
+
+		careersData[i] = &CareerData{
+			CareerID:  career.careerID.String(),
+			Detail:    career.detail,
+			StartYear: int(career.startYear),
+			EndYear:   &endYear,
+			CreatedAt: time.Time(career.createdAt),
+		}
+
+		if endYear == -1 {
+			careersData[i].EndYear = nil
+		}
+	}
+
+	return careersData
 }
 
 func checkDetailLength(detail string) error {

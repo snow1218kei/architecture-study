@@ -7,9 +7,25 @@ import (
 
 func CreateUserAggregate(userParams UserParams, careersParams []CareerParams, skillsParams []SkillParams) (*User, error) {
 	email, err := shared.NewEmail(userParams.Email)
+	if err != nil {
+		return nil, err
+	}
+
 	password, err := NewPassword(userParams.Password)
+	if err != nil {
+		return nil, err
+	}
+
 	careers, err := prepareCareers(careersParams, shared.NewCreatedAt())
+	if err != nil {
+		return nil, err
+	}
+
 	skills, err := prepareSkills(skillsParams, shared.NewCreatedAt())
+	if err != nil {
+		return nil, err
+	}
+	
 	userInput := UserInput{
 		Name:      userParams.Name,
 		Email:     email,
