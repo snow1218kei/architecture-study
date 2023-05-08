@@ -3,7 +3,7 @@ package user
 import (
 	"context"
 	"database/sql"
-	"log"
+	"errors"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
@@ -82,27 +82,26 @@ func (repo *RdbUserRepositoryImpl) FindByName(ctx context.Context, name string) 
 	err := repo.conn.Get(&dbUser, "SELECT * FROM users WHERE name = $1 LIMIT 1", name)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, nil
+			return nil, errors.New("user not found")
 		}
-		log.Fatal(err)
+		return nil, errors.New("error occurred")
 	}
 
 	var dbCareers []*datamodel.Career
 	err = repo.conn.Select(&dbCareers, "SELECT * FROM careers WHERE user_id = $1", dbUser.ID)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, nil
+		if err != sql.ErrNoRows {
+			return nil, errors.New("error occurred")
 		}
-		log.Fatal(err)
 	}
 
 	var dbSkills []*datamodel.Skill
 	err = repo.conn.Select(&dbSkills, "SELECT * FROM skills WHERE user_id = $1", dbUser.ID)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, nil
+			return nil, errors.New("user not found")
 		}
-		log.Fatal(err)
+		return nil, errors.New("error occurred")
 	}
 
 	careersData := make([]*user.CareerData, len(dbCareers))
