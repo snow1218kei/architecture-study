@@ -2,6 +2,7 @@ package user_test
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"testing"
 
@@ -38,7 +39,7 @@ func TestExec(t *testing.T) {
 			name:     "異常系：存在しないユーザー名（NotFound）の場合",
 			userName: "non_existing_user",
 			mockFunc: func() {
-				mockRepo.EXPECT().FindByName(context.Background(), "non_existing_user").Return(nil, user.IsNotFound)
+				mockRepo.EXPECT().FindByName(context.Background(), "non_existing_user").Return(nil, sql.ErrNoRows)
 			},
 			expected:      false,
 			expectedError: nil,

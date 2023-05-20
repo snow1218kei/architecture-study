@@ -3,7 +3,7 @@ package user
 import (
 	"context"
 	"database/sql"
-	"errors"
+	"fmt"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
@@ -26,15 +26,8 @@ func (repo *RdbUserRepositoryImpl) Store(ctx context.Context, u *user.User) erro
 
 	tx, err := repo.conn.Beginx()
 	if err != nil {
-		return err
+		return fmt.Errorf("RdbUserRepositoryImpl.Store failed with conn.Beginx(): %w", err)
 	}
-
-	defer func() {
-		if err := recover(); err != nil {
-			tx.Rollback()
-			panic(err)
-		}
-	}()
 
 	query := `
 		INSERT INTO users (user_id, name, email, password, profile, created_at)
@@ -44,7 +37,7 @@ func (repo *RdbUserRepositoryImpl) Store(ctx context.Context, u *user.User) erro
 	_, err = tx.ExecContext(ctx, query, userData.UserID, userData.Name, userData.Email, userData.Password, userData.Profile, userData.CreatedAt)
 	if err != nil {
 		tx.Rollback()
-		return err
+		return fmt.Errorf("RdbUserRepositoryImpl.Store failed to insert user: %w", err)
 	}
 
 	for _, career := range userData.Careers {
@@ -56,7 +49,7 @@ func (repo *RdbUserRepositoryImpl) Store(ctx context.Context, u *user.User) erro
 		_, err = tx.ExecContext(ctx, query, career.CareerID, userData.UserID, career.Detail, career.StartYear, career.EndYear, career.CreatedAt)
 		if err != nil {
 			tx.Rollback()
-			return err
+			return fmt.Errorf("RdbUserRepositoryImpl.Store failed to insert career: %w", err)
 		}
 	}
 
@@ -69,7 +62,7 @@ func (repo *RdbUserRepositoryImpl) Store(ctx context.Context, u *user.User) erro
 		_, err = tx.ExecContext(ctx, query, skill.SkillID, userData.UserID, skill.TagID, skill.Evaluation, skill.Years, skill.CreatedAt)
 		if err != nil {
 			tx.Rollback()
-			return err
+			return fmt.Errorf("RdbUserRepositoryImpl.Store failed to insert skill: %w", err)
 		}
 	}
 
@@ -82,16 +75,16 @@ func (repo *RdbUserRepositoryImpl) FindByName(ctx context.Context, name string) 
 	err := repo.conn.Get(&dbUser, "SELECT * FROM users WHERE name = $1 LIMIT 1", name)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, errors.New("user not found")
+			return nil, fmt.Errorf("RdbUserRepositoryImpl.FindByName failed to find user: %w", err)
 		}
-		return nil, errors.New("error occurred")
+		return nil, fmt.Errorf("RdbUserRepositoryImpl.FindByName failed with DB error: %w", err)
 	}
 
 	var dbCareers []*datamodel.Career
 	err = repo.conn.Select(&dbCareers, "SELECT * FROM careers WHERE user_id = $1", dbUser.ID)
 	if err != nil {
 		if err != sql.ErrNoRows {
-			return nil, errors.New("error occurred")
+			return nil, fmt.Errorf("RdbUserRepositoryImpl.FindByName failed with DB error: %w", err)
 		}
 	}
 
@@ -99,9 +92,9 @@ func (repo *RdbUserRepositoryImpl) FindByName(ctx context.Context, name string) 
 	err = repo.conn.Select(&dbSkills, "SELECT * FROM skills WHERE user_id = $1", dbUser.ID)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, errors.New("user not found")
+			return nil, fmt.Errorf("RdbUserRepositoryImpl.FindByName failed to find skill: %w", err)
 		}
-		return nil, errors.New("error occurred")
+		return nil, fmt.Errorf("RdbUserRepositoryImpl.FindByName failed with DB error: %w", err)
 	}
 
 	careersData := make([]*user.CareerData, len(dbCareers))
@@ -139,7 +132,7 @@ func (repo *RdbUserRepositoryImpl) FindByName(ctx context.Context, name string) 
 
 	user, err := user.ReconstructUserFromData(userData)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("RdbUserRepositoryImpl.FindByName failed with user.ReconstructUserFromData: %w", err)
 	}
 
 	return user, nil
