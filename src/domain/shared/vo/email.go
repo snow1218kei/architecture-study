@@ -1,8 +1,9 @@
 package shared
 
 import (
-	"fmt"
 	"regexp"
+
+	"github.com/yuuki-tsujimura/architecture-study/src/support/apperr"
 )
 
 const (
@@ -21,7 +22,7 @@ func NewEmail(email string) (Email, error) {
 func isValidEmail(email string) error {
 	rxEmail := regexp.MustCompile(emailPolicy)
 	if !rxEmail.MatchString(email) {
-		return fmt.Errorf("無効なEmailアドレスです")
+		return apperr.BadRequest("無効なEmailアドレスです")
 	}
 	return nil
 }

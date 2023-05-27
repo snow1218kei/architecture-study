@@ -2,10 +2,9 @@ package user
 
 import (
 	"context"
-	"errors"
-)
 
-var IsNotFound = errors.New("not found")
+	"github.com/yuuki-tsujimura/architecture-study/src/support/apperr"
+)
 
 type IsExistByNameService struct {
 	repo UserRepository
@@ -21,11 +20,10 @@ func (ds *IsExistByNameService) Exec(ctx context.Context, name string) (bool, er
 	user, err := ds.repo.FindByName(ctx, name)
 
 	if err != nil {
-		if errors.Is(err, IsNotFound) {
+		if apperr.Is(err, &apperr.NotFoundErr{}) {
 			return false, nil
 		}
 		return false, err
 	}
 	return user != nil, nil
 }
-

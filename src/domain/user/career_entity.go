@@ -1,11 +1,11 @@
 package user
 
 import (
-	"fmt"
 	"time"
 	"unicode/utf8"
 
 	shared "github.com/yuuki-tsujimura/architecture-study/src/domain/shared/vo"
+	"github.com/yuuki-tsujimura/architecture-study/src/support/apperr"
 )
 
 type Career struct {
@@ -52,7 +52,7 @@ func newCareer(params *CareerParams, careerID CareerID, createdAt shared.Created
 	}, nil
 }
 
-func ReconstructCareersFromData(careersData []*CareerData) ([]*Career) {
+func ReconstructCareersFromData(careersData []*CareerData) []*Career {
 	careers := make([]*Career, len(careersData))
 
 	for i, careerData := range careersData {
@@ -100,21 +100,21 @@ func ConvertCareersToCareerData(careers []*Career) []*CareerData {
 
 func checkDetailLength(detail string) error {
 	if utf8.RuneCountInString(detail) > 255 {
-		return fmt.Errorf("detailは255文字以下である必要があります。(現在%d文字)", utf8.RuneCountInString(detail))
+		return apperr.BadRequestf("detailは255文字以下である必要があります。(現在%d文字)", utf8.RuneCountInString(detail))
 	}
 	return nil
 }
 
 func validateStartYear(startYear uint16) error {
 	if startYear < 1970 {
-		return fmt.Errorf("startYearは1970年以上である必要があります")
+		return apperr.BadRequest("startYearは1970年以上である必要があります")
 	}
 	return nil
 }
 
 func validateEndYear(endYear uint16, startYear uint16) error {
 	if endYear < 1970 || endYear <= startYear {
-		return fmt.Errorf("endYearは1970年以上であり、startYearより後の数値である必要があります")
+		return apperr.BadRequest("endYearは1970年以上であり、startYearより後の数値である必要があります")
 	}
 	return nil
 }

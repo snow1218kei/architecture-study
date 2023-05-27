@@ -1,42 +1,32 @@
 package controller
 
 import (
-	"encoding/json"
-	"io/ioutil"
-	"net/http"
+	"context"
 
-	"github.com/jmoiron/sqlx"
-	"github.com/julienschmidt/httprouter"
-	repoimpl "github.com/yuuki-tsujimura/architecture-study/src/infra/db/user"
+	"github.com/yuuki-tsujimura/architecture-study/src/domain/user"
+	"github.com/yuuki-tsujimura/architecture-study/src/interface/presenter"
 	"github.com/yuuki-tsujimura/architecture-study/src/usecase/userusecase"
 	"github.com/yuuki-tsujimura/architecture-study/src/usecase/userusecase/userinput"
 )
 
-func CreateUserController(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-	}
+type userController struct {
+	delivery presenter.UserPresenter
+	userRepo user.UserRepository
+}
 
-	var input userinput.CreateUserInput
-	err = json.Unmarshal([]byte(body), &input)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+func NewUserController(p presenter.UserPresenter, userRepo user.UserRepository) *userController {
+	return &userController{
+		delivery: p,
+		userRepo: userRepo,
 	}
+}
 
-	db, err := sqlx.Open("postgresql", "root/sample")
+func (c *userController) CreateUser(ctx context.Context, in *userinput.CreateUserInput) error {
+	usecase := userusecase.NewCreateUserUseCase(c.userRepo)
+	out, err := usecase.Exec(ctx, in)
 	if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
+		return err
 	}
-
-	repository := repoimpl.NewRdbUserRepository(db)
-	createUserUsecase := userusecase.NewCreateUserUseCase(repository)
-	err = createUserUsecase.Exec(r.Context(), &input)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
+	c.delivery.Create(out)
+	return nil
 }

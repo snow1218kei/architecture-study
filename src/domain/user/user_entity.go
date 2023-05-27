@@ -1,11 +1,11 @@
 package user
 
 import (
-	"fmt"
 	"time"
 	"unicode/utf8"
 
 	shared "github.com/yuuki-tsujimura/architecture-study/src/domain/shared/vo"
+	"github.com/yuuki-tsujimura/architecture-study/src/support/apperr"
 )
 
 type User struct {
@@ -69,7 +69,11 @@ func newUser(userInput UserInput) (*User, error) {
 	}, nil
 }
 
-func ReconstructUserFromData(userData UserData) (*User, error) {
+func (u *User) ID() UserID {
+	return u.userID
+}
+
+func ReconstructUserFromData(userData UserData) *User {
 	return &User{
 		userID:    UserID(userData.UserID),
 		name:      userData.Name,
@@ -79,7 +83,7 @@ func ReconstructUserFromData(userData UserData) (*User, error) {
 		careers:   ReconstructCareersFromData(userData.Careers),
 		skills:    ReconstructSkillsFromData(userData.Skills),
 		createdAt: shared.CreatedAt(userData.CreatedAt),
-	}, nil
+	}
 }
 
 func ConvertUserToUserData(user *User) UserData {
@@ -97,14 +101,14 @@ func ConvertUserToUserData(user *User) UserData {
 
 func checkNameLength(name string) error {
 	if utf8.RuneCountInString(name) > 255 {
-		return fmt.Errorf("名前は255文字以下である必要があります。(現在%d文字)", utf8.RuneCountInString(name))
+		return apperr.BadRequestf("名前は255文字以下である必要があります。(現在%d文字)", utf8.RuneCountInString(name))
 	}
 	return nil
 }
 
 func checkProfileLength(profile string) error {
 	if utf8.RuneCountInString(profile) >= 2000 {
-		return fmt.Errorf("プロフィールは2000文字以下である必要があります。(現在%d文字)", utf8.RuneCountInString(profile))
+		return apperr.BadRequestf("プロフィールは2000文字以下である必要があります。(現在%d文字)", utf8.RuneCountInString(profile))
 	}
 	return nil
 }

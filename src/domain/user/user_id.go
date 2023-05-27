@@ -1,9 +1,8 @@
 package user
 
 import (
-	"errors"
-
 	"github.com/google/uuid"
+	"github.com/yuuki-tsujimura/architecture-study/src/support/apperr"
 )
 
 type UserID string
@@ -14,7 +13,7 @@ func newUserID() UserID {
 
 func NewUserIDByVal(val string) (UserID, error) {
 	if val == "" {
-		return UserID(""), errors.New("userID must not be empty")
+		return UserID(""), apperr.BadRequest("userID must not be empty")
 	}
 	return UserID(val), nil
 }
