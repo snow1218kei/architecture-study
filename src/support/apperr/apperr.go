@@ -186,6 +186,7 @@ func UnauthorizedWrapf(err2 error, format string, msg ...any) *UnauthorizedErr {
 	}
 }
 
-func Is(err1, err2 error) bool {
-	return errors.As(err1, err2)
+func Is[T any](err error) bool {
+	_, ok := err.(T)
+	return ok
 }
