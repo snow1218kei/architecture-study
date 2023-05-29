@@ -86,15 +86,19 @@ func ConvertSkillsToSkillData(skills []*Skill) []*SkillData {
 }
 
 func validateEvalation(evaluation uint16) error {
-	if evaluation < 1 || 5 < evaluation {
-		return apperr.BadRequest("評価は1〜5の5段階です")
+	const minValue = 1
+	const maxValue = 5
+	if evaluation < minValue || maxValue < evaluation {
+		return apperr.BadRequestf("評価は1〜5の5段階です: %d", evaluation)
 	}
 	return nil
 }
 
 func validateYears(years uint16) error {
-	if years < 1 || 5 < years {
-		return apperr.BadRequest("1年以上、5年以内で入力してください")
+	const minYear = 1
+	const maxYear = 5
+	if years < minYear || maxYear < years {
+		return apperr.BadRequestf("1年以上、5年以内で入力してください: %d", years)
 	}
 	return nil
 }

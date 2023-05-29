@@ -100,15 +100,17 @@ func ConvertUserToUserData(user *User) UserData {
 }
 
 func checkNameLength(name string) error {
-	if utf8.RuneCountInString(name) > 255 {
-		return apperr.BadRequestf("名前は255文字以下である必要があります。(現在%d文字)", utf8.RuneCountInString(name))
+	const MaxLength = 255
+	if l := utf8.RuneCountInString(name); l > 255 {
+		return apperr.BadRequestf("名前は%d文字以下である必要があります。(現在%d文字)", MaxLength, l)
 	}
 	return nil
 }
 
 func checkProfileLength(profile string) error {
-	if utf8.RuneCountInString(profile) >= 2000 {
-		return apperr.BadRequestf("プロフィールは2000文字以下である必要があります。(現在%d文字)", utf8.RuneCountInString(profile))
+	const MaxLength = 2000
+	if l := utf8.RuneCountInString(profile); l >= 2000 {
+		return apperr.BadRequestf("プロフィールは%d文字以下である必要があります。(現在%d文字)", MaxLength, l)
 	}
 	return nil
 }

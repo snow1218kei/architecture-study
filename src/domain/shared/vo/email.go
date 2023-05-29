@@ -22,7 +22,7 @@ func NewEmail(email string) (Email, error) {
 func isValidEmail(email string) error {
 	rxEmail := regexp.MustCompile(emailPolicy)
 	if !rxEmail.MatchString(email) {
-		return apperr.BadRequest("無効なEmailアドレスです")
+		return apperr.BadRequestf("無効なEmailアドレスです: %s", email)
 	}
 	return nil
 }

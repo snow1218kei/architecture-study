@@ -47,7 +47,7 @@ func checkUserNameExistence(ctx context.Context, name string, userRepo user.User
 		return err
 	}
 	if isExist {
-		return apperr.BadRequestWrapf(err, "存在しているので他の名前でお願いします")
+		return apperr.BadRequestWrapf(err, "存在しているので他の名前でお願いします: %s", name)
 	}
 
 	return nil

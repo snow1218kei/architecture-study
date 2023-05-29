@@ -1,7 +1,7 @@
 package user_test
 
 import (
-	"errors"
+	"github.com/yuuki-tsujimura/architecture-study/src/support/apperr"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -28,7 +28,7 @@ func TestNewSkill(t *testing.T) {
 				Years:      2,
 			},
 			expected: user.GenSkillForTest(skillID, tag.TagID("1"), 3, 2, createdAt),
-			wantErr: nil,
+			wantErr:  nil,
 		},
 		{
 			testCase: "異常系：Evaluationが1未満の場合",
@@ -38,7 +38,7 @@ func TestNewSkill(t *testing.T) {
 				Years:      2,
 			},
 			expected: nil,
-			wantErr:  errors.New("評価は1〜5の5段階です"),
+			wantErr:  apperr.BadRequest("評価は1〜5の5段階です: 0"),
 		},
 		{
 			testCase: "異常系：Evaluationが5を超える場合",
@@ -48,7 +48,7 @@ func TestNewSkill(t *testing.T) {
 				Years:      2,
 			},
 			expected: nil,
-			wantErr:  errors.New("評価は1〜5の5段階です"),
+			wantErr:  apperr.BadRequest("評価は1〜5の5段階です: 6"),
 		},
 		{
 			testCase: "異常系：Yearsが1年未満の場合",
@@ -58,7 +58,7 @@ func TestNewSkill(t *testing.T) {
 				Years:      0,
 			},
 			expected: nil,
-			wantErr:  errors.New("1年以上、5年以内で入力してください"),
+			wantErr:  apperr.BadRequest("1年以上、5年以内で入力してください: 0"),
 		},
 		{
 			testCase: "異常系：Yearsが5を超える場合",
@@ -68,7 +68,7 @@ func TestNewSkill(t *testing.T) {
 				Years:      6,
 			},
 			expected: nil,
-			wantErr:  errors.New("1年以上、5年以内で入力してください"),
+			wantErr:  apperr.BadRequest("1年以上、5年以内で入力してください: 6"),
 		},
 		{
 			testCase: "異常系：TagIDが空の場合",
@@ -78,7 +78,7 @@ func TestNewSkill(t *testing.T) {
 				Years:      2,
 			},
 			expected: nil,
-			wantErr:  errors.New("tagID must not be empty"),
+			wantErr:  apperr.BadRequest("tagID must not be empty"),
 		},
 	}
 
@@ -87,7 +87,11 @@ func TestNewSkill(t *testing.T) {
 			skill, err := user.NewSkill(test.params, skillID, createdAt)
 
 			assert.Equal(t, test.expected, skill)
-			assert.Equal(t, test.wantErr, err)
+			if err != nil && test.wantErr != nil {
+				assert.Equal(t, test.wantErr.Error(), err.Error())
+			} else {
+				assert.Equal(t, test.wantErr, err)
+			}
 		})
 	}
 }

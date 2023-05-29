@@ -99,22 +99,27 @@ func ConvertCareersToCareerData(careers []*Career) []*CareerData {
 }
 
 func checkDetailLength(detail string) error {
-	if utf8.RuneCountInString(detail) > 255 {
-		return apperr.BadRequestf("detailは255文字以下である必要があります。(現在%d文字)", utf8.RuneCountInString(detail))
+	const MaxLength = 255
+	if l := utf8.RuneCountInString(detail); l > MaxLength {
+		return apperr.BadRequestf("detailは%d文字以下である必要があります。(現在%d文字)", MaxLength, l)
 	}
+
 	return nil
 }
 
 func validateStartYear(startYear uint16) error {
-	if startYear < 1970 {
-		return apperr.BadRequest("startYearは1970年以上である必要があります")
+	const MinStartYear = 1970
+	if y := startYear; y < MinStartYear {
+		return apperr.BadRequestf("startYearは%d年以上である必要があります: %d", MinStartYear, y)
 	}
+
 	return nil
 }
 
 func validateEndYear(endYear uint16, startYear uint16) error {
-	if endYear < 1970 || endYear <= startYear {
-		return apperr.BadRequest("endYearは1970年以上であり、startYearより後の数値である必要があります")
+	const MinStartYear = 1970
+	if endYear < MinStartYear || endYear <= startYear {
+		return apperr.BadRequestf("endYearは%d年以上であり、startYearより後の数値である必要があります: %d", MinStartYear, endYear)
 	}
 	return nil
 }

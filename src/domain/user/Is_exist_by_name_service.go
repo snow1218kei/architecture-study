@@ -2,7 +2,6 @@ package user
 
 import (
 	"context"
-
 	"github.com/yuuki-tsujimura/architecture-study/src/support/apperr"
 )
 
@@ -20,7 +19,7 @@ func (ds *IsExistByNameService) Exec(ctx context.Context, name string) (bool, er
 	user, err := ds.repo.FindByName(ctx, name)
 
 	if err != nil {
-		if apperr.Is(err, &apperr.NotFoundErr{}) {
+		if apperr.Is[*apperr.NotFoundErr](err) {
 			return false, nil
 		}
 		return false, err

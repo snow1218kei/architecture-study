@@ -37,15 +37,17 @@ func validatePasswordLength(password string) error {
 func validatePasswordContainsAlphabet(password string) error {
 	matched, _ := regexp.MatchString(alphabetPolicy, password)
 	if !matched {
-		return apperr.BadRequest("英字が最低1文字は含まれていなければなりません")
+		return apperr.BadRequestf("英字が最低1文字は含まれていなければなりません: %s", password)
 	}
+
 	return nil
 }
 
 func validatePasswordContainsDigit(password string) error {
 	matched, _ := regexp.MatchString(digitPolicy, password)
 	if !matched {
-		return apperr.BadRequest("数字が最低1文字は含まれていなければなりません")
+		return apperr.BadRequestf("数字が最低1文字は含まれていなければなりません: %s", password)
 	}
+
 	return nil
 }

@@ -3,6 +3,7 @@ package userusecase_test
 import (
 	"context"
 	"errors"
+	"github.com/yuuki-tsujimura/architecture-study/src/support/apperr"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -29,7 +30,7 @@ func TestExec(t *testing.T) {
 				UserInput: userinput.UserInput{
 					Name:     "non_existing_user",
 					Email:    "testuser@example.com",
-					Password: "password",
+					Password: "password123456789",
 					Profile:  "test profile",
 				},
 				CareersInput: []*userinput.CareerInput{
@@ -84,7 +85,7 @@ func TestExec(t *testing.T) {
 				mockRepo.EXPECT().FindByName(ctx, "existing_user").Return(&user.User{}, nil)
 				return mockRepo
 			},
-			expectedError: errors.New("存在しているので他の名前でお願いします"),
+			expectedError: apperr.BadRequest("存在しているので他の名前でお願いします: existing_user"),
 		},
 		{
 			name: "異常系: 存在チェック時にサーバーエラーが起きた場合",
@@ -115,7 +116,7 @@ func TestExec(t *testing.T) {
 				mockRepo.EXPECT().FindByName(ctx, "non_existing_user").Return(nil, errors.New("server error"))
 				return mockRepo
 			},
-			expectedError: userusecase.ErrInternalServer,
+			expectedError: apperr.Internal("server error"),
 		},
 		{
 			name: "異常系: ユーザの登録に失敗する場合",
@@ -123,7 +124,7 @@ func TestExec(t *testing.T) {
 				UserInput: userinput.UserInput{
 					Name:     "non_existing_user",
 					Email:    "testuser@example.com",
-					Password: "password",
+					Password: "password123456789",
 					Profile:  "test profile",
 				},
 				CareersInput: []*userinput.CareerInput{
@@ -147,7 +148,7 @@ func TestExec(t *testing.T) {
 				mockRepo.EXPECT().FindByName(ctx, "non_existing_user").Return(nil, nil)
 				return mockRepo
 			},
-			expectedError: errors.New("ユーザの登録に失敗しました"),
+			expectedError: apperr.Internal("error"),
 		},
 	}
 
@@ -156,7 +157,11 @@ func TestExec(t *testing.T) {
 			userUsecase := userusecase.NewCreateUserUseCase(tc.mockFunc())
 			_, err := userUsecase.Exec(ctx, tc.input)
 
-			assert.Equal(t, tc.expectedError, err)
+			if err != nil && tc.expectedError != nil {
+				assert.Equal(t, tc.expectedError.Error(), err.Error())
+			} else {
+				assert.Equal(t, tc.expectedError, err)
+			}
 		})
 	}
 }
