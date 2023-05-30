@@ -1,9 +1,8 @@
 package user
 
 import (
-	"errors"
-
 	"github.com/google/uuid"
+	"github.com/yuuki-tsujimura/architecture-study/src/support/apperr"
 )
 
 type SkillID string
@@ -14,7 +13,7 @@ func newSkillID() SkillID {
 
 func NewSkillIDByVal(val string) (SkillID, error) {
 	if val == "" {
-		return SkillID(""), errors.New("skillID must not be empty")
+		return SkillID(""), apperr.BadRequest("skillID must not be empty")
 	}
 	return SkillID(val), nil
 }

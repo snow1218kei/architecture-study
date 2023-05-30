@@ -24,19 +24,19 @@ func TestNewEmail(t *testing.T) {
 			testCase: "異常系：@が抜けている場合",
 			input:    "test123gmail.com",
 			expected: shared.Email(""),
-			wantErr:  "無効なEmailアドレスです",
+			wantErr:  "無効なEmailアドレスです: test123gmail.com",
 		},
 		{
 			testCase: "異常系：アドレスの先頭に.がある場合",
 			input:    ".test123@gmail.com",
 			expected: shared.Email(""),
-			wantErr:  "無効なEmailアドレスです",
+			wantErr:  "無効なEmailアドレスです: .test123@gmail.com",
 		},
 		{
 			testCase: "異常系：空文字の場合",
 			input:    "",
 			expected: shared.Email(""),
-			wantErr:  "無効なEmailアドレスです",
+			wantErr:  "無効なEmailアドレスです: ",
 		},
 	}
 

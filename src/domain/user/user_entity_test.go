@@ -1,7 +1,7 @@
 package user_test
 
 import (
-	"errors"
+	"github.com/yuuki-tsujimura/architecture-study/src/support/apperr"
 	"strings"
 	"testing"
 
@@ -24,10 +24,10 @@ func TestNewUser(t *testing.T) {
 	careers := user.GenCareersForTest(user.NewCareerID(), "companyB", 2010, 2015, createdAt)
 	skills := user.GenSkillsForTest(user.NewSkillID(), "1", 4, 5, createdAt)
 	tests := []struct {
-		testCase  string
+		testCase string
 		input    user.UserInput
-		expected  *user.User
-		wantError error
+		expected *user.User
+		wantErr  error
 	}{
 		{
 			testCase: "正常系：有効なparamsの場合",
@@ -42,7 +42,7 @@ func TestNewUser(t *testing.T) {
 				CreatedAt: createdAt,
 			},
 			expected: user.GenUserForTest(userID, "test user", email, password, "test profile", careers, skills, createdAt),
-			wantError: nil,
+			wantErr:  nil,
 		},
 		{
 			testCase: "異常系：nameが長過ぎる場合",
@@ -56,8 +56,8 @@ func TestNewUser(t *testing.T) {
 				Skills:    skills,
 				CreatedAt: createdAt,
 			},
-			expected:  nil,
-			wantError: errors.New("名前は255文字以下である必要があります。(現在400文字)"),
+			expected: nil,
+			wantErr:  apperr.BadRequest("名前は255文字以下である必要があります。(現在400文字)"),
 		},
 		{
 			testCase: "異常系：profileが長過ぎる場合",
@@ -71,8 +71,8 @@ func TestNewUser(t *testing.T) {
 				Skills:    skills,
 				CreatedAt: createdAt,
 			},
-			expected:  nil,
-			wantError: errors.New("プロフィールは2000文字以下である必要があります。(現在3000文字)"),
+			expected: nil,
+			wantErr:  apperr.BadRequest("プロフィールは2000文字以下である必要があります。(現在3000文字)"),
 		},
 	}
 
@@ -80,8 +80,12 @@ func TestNewUser(t *testing.T) {
 		t.Run(test.testCase, func(t *testing.T) {
 			user, err := user.NewUser(test.input)
 
-			assert.Equal(t, test.wantError, err)
 			assert.Equal(t, test.expected, user)
+			if err != nil && test.wantErr != nil {
+				assert.Equal(t, test.wantErr.Error(), err.Error())
+			} else {
+				assert.Equal(t, test.wantErr, err)
+			}
 		})
 	}
 }

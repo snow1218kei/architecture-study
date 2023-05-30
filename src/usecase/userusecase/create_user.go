@@ -2,14 +2,12 @@ package userusecase
 
 import (
 	"context"
-	"errors"
-	"fmt"
 
 	"github.com/yuuki-tsujimura/architecture-study/src/domain/user"
+	"github.com/yuuki-tsujimura/architecture-study/src/support/apperr"
 	"github.com/yuuki-tsujimura/architecture-study/src/usecase/userusecase/userinput"
+	"github.com/yuuki-tsujimura/architecture-study/src/usecase/userusecase/useroutput"
 )
-
-var ErrInternalServer = errors.New("internal server error")
 
 type CreateUserUseCase struct {
 	userRepo user.UserRepository
@@ -21,36 +19,37 @@ func NewCreateUserUseCase(userRepo user.UserRepository) *CreateUserUseCase {
 	}
 }
 
-func (usercase *CreateUserUseCase) Exec(ctx context.Context, input *userinput.CreateUserInput) error {
+func (usercase *CreateUserUseCase) Exec(ctx context.Context, input *userinput.CreateUserInput) (*useroutput.CreateUserOutput, error) {
 	err := checkUserNameExistence(ctx, input.UserInput.Name, usercase.userRepo)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	user, err := createUser(input)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	err = saveUser(ctx, user, usercase.userRepo)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return &useroutput.CreateUserOutput{
+		ID: user.ID().String(),
+	}, nil
 }
 
 func checkUserNameExistence(ctx context.Context, name string, userRepo user.UserRepository) error {
 	isExistByNameService := user.NewIsExistByNameService(userRepo)
 	isExist, err := isExistByNameService.Exec(ctx, name)
 	if err != nil {
-		// サーバ側のエラーとして返す
-		return ErrInternalServer
+		return err
 	}
 	if isExist {
-		// BadRequestを返す
-		return fmt.Errorf("存在しているので他の名前でお願いします")
+		return apperr.BadRequestWrapf(err, "存在しているので他の名前でお願いします: %s", name)
 	}
+
 	return nil
 }
 
@@ -85,8 +84,9 @@ func createUser(input *userinput.CreateUserInput) (*user.User, error) {
 	user, err := user.CreateUserAggregate(userParams, careersParams, skillsParams)
 
 	if err != nil {
-		return nil, fmt.Errorf("ユーザの作成に失敗しました")
+		return nil, err
 	}
+
 	return user, nil
 }
 
@@ -94,7 +94,8 @@ func saveUser(ctx context.Context, user *user.User, userRepo user.UserRepository
 	err := userRepo.Store(ctx, user)
 
 	if err != nil {
-		return fmt.Errorf("ユーザの登録に失敗しました")
+		return err
 	}
+
 	return nil
 }

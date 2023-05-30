@@ -1,7 +1,7 @@
 package user_test
 
 import (
-	"errors"
+	"github.com/yuuki-tsujimura/architecture-study/src/support/apperr"
 	"strings"
 	"testing"
 
@@ -28,7 +28,7 @@ func TestNewCareer(t *testing.T) {
 				EndYear:   2022,
 			},
 			expected: user.GenCareerForTest(careerID, "Software Engineer", 2015, 2022, createdAt),
-			wantErr: nil,
+			wantErr:  nil,
 		},
 		{
 			testCase: "異常系：Detailが長過ぎる場合, エラーを返す",
@@ -38,7 +38,7 @@ func TestNewCareer(t *testing.T) {
 				EndYear:   2022,
 			},
 			expected: nil,
-			wantErr:  errors.New("detailは255文字以下である必要があります。(現在256文字)"),
+			wantErr:  apperr.BadRequest("detailは255文字以下である必要があります。(現在256文字)"),
 		},
 		{
 			testCase: "異常系：StartYearが1970年未満の場合, エラーを返す",
@@ -48,7 +48,7 @@ func TestNewCareer(t *testing.T) {
 				EndYear:   2022,
 			},
 			expected: nil,
-			wantErr:  errors.New("startYearは1970年以上である必要があります"),
+			wantErr:  apperr.BadRequest("startYearは1970年以上である必要があります: 1969"),
 		},
 		{
 			testCase: "異常系：EndYearが1970年未満の場合, エラーを返す",
@@ -58,7 +58,7 @@ func TestNewCareer(t *testing.T) {
 				EndYear:   1969,
 			},
 			expected: nil,
-			wantErr:  errors.New("endYearは1970年以上であり、startYearより後の数値である必要があります"),
+			wantErr:  apperr.BadRequest("endYearは1970年以上であり、startYearより後の数値である必要があります: 1969"),
 		},
 		{
 			testCase: "異常系：EndYearがStartYear以下の場合, エラーを返す",
@@ -68,7 +68,7 @@ func TestNewCareer(t *testing.T) {
 				EndYear:   2015,
 			},
 			expected: nil,
-			wantErr:  errors.New("endYearは1970年以上であり、startYearより後の数値である必要があります"),
+			wantErr:  apperr.BadRequest("endYearは1970年以上であり、startYearより後の数値である必要があります: 2015"),
 		},
 	}
 
@@ -77,7 +77,11 @@ func TestNewCareer(t *testing.T) {
 			career, err := user.NewCareer(test.params, careerID, createdAt)
 
 			assert.Equal(t, test.expected, career)
-			assert.Equal(t, test.wantErr, err)
+			if err != nil && test.wantErr != nil {
+				assert.Equal(t, test.wantErr.Error(), err.Error())
+			} else {
+				assert.Equal(t, test.wantErr, err)
+			}
 		})
 	}
 }

@@ -1,7 +1,7 @@
 package user
 
 import (
-	"fmt"
+	"github.com/yuuki-tsujimura/architecture-study/src/support/apperr"
 	"regexp"
 )
 
@@ -29,7 +29,7 @@ func NewPassword(password string) (Password, error) {
 func validatePasswordLength(password string) error {
 	matched, _ := regexp.MatchString(letterLengthPolicy, password)
 	if !matched {
-		return fmt.Errorf("文字数は最低12文字以上でなければなりません")
+		return apperr.BadRequest("文字数は最低12文字以上でなければなりません")
 	}
 	return nil
 }
@@ -37,15 +37,17 @@ func validatePasswordLength(password string) error {
 func validatePasswordContainsAlphabet(password string) error {
 	matched, _ := regexp.MatchString(alphabetPolicy, password)
 	if !matched {
-		return fmt.Errorf("英字が最低1文字は含まれていなければなりません")
+		return apperr.BadRequestf("英字が最低1文字は含まれていなければなりません: %s", password)
 	}
+
 	return nil
 }
 
 func validatePasswordContainsDigit(password string) error {
 	matched, _ := regexp.MatchString(digitPolicy, password)
 	if !matched {
-		return fmt.Errorf("数字が最低1文字は含まれていなければなりません")
+		return apperr.BadRequestf("数字が最低1文字は含まれていなければなりません: %s", password)
 	}
+
 	return nil
 }

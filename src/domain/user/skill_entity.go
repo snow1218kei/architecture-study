@@ -1,11 +1,18 @@
 package user
 
 import (
-	"fmt"
 	"time"
 
 	shared "github.com/yuuki-tsujimura/architecture-study/src/domain/shared/vo"
-	tag "github.com/yuuki-tsujimura/architecture-study/src/domain/tag"
+	"github.com/yuuki-tsujimura/architecture-study/src/domain/tag"
+	"github.com/yuuki-tsujimura/architecture-study/src/support/apperr"
+)
+
+const (
+	minValue = 1
+	maxValue = 5
+	minYear  = 1
+	maxYear  = 5
 )
 
 type Skill struct {
@@ -41,7 +48,7 @@ func newSkill(params *SkillParams, skillID SkillID, createdAt shared.CreatedAt) 
 
 	tagID, err := tag.NewTagIDByVal(params.TagID)
 	if err != nil {
-			return nil, err
+		return nil, err
 	}
 
 	return &Skill{
@@ -53,7 +60,7 @@ func newSkill(params *SkillParams, skillID SkillID, createdAt shared.CreatedAt) 
 	}, nil
 }
 
-func ReconstructSkillsFromData(skillsData []*SkillData) ([]*Skill) {
+func ReconstructSkillsFromData(skillsData []*SkillData) []*Skill {
 	skills := make([]*Skill, len(skillsData))
 
 	for i, skillData := range skillsData {
@@ -85,17 +92,16 @@ func ConvertSkillsToSkillData(skills []*Skill) []*SkillData {
 	return skillsData
 }
 
-
 func validateEvalation(evaluation uint16) error {
-	if evaluation < 1 || 5 < evaluation {
-		return fmt.Errorf("評価は1〜5の5段階です")
+	if evaluation < minValue || maxValue < evaluation {
+		return apperr.BadRequestf("評価は1〜5の5段階です: %d", evaluation)
 	}
 	return nil
 }
 
 func validateYears(years uint16) error {
-	if years < 1 || 5 < years {
-		return fmt.Errorf("1年以上、5年以内で入力してください")
+	if years < minYear || maxYear < years {
+		return apperr.BadRequestf("1年以上、5年以内で入力してください: %d", years)
 	}
 	return nil
 }

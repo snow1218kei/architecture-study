@@ -1,22 +1,19 @@
 package main
 
 import (
-	"net/http"
 	"log"
 
+	"github.com/gin-gonic/gin"
+	"github.com/yuuki-tsujimura/architecture-study/src/infra/middleware"
 	"github.com/yuuki-tsujimura/architecture-study/src/infra/router"
 )
 
 func main() {
-	router := router.Router()
+	g := gin.Default()
 
-	server := http.Server{
-		Addr: "0.0.0.0:80",
-		Handler: router,
-	}
+	g.Use(middleware.HandleErrorMiddleware())
 
-	err := server.ListenAndServe()
-	if err != nil {
-		log.Fatalf("失敗しました: %v", err)
-	}
+	router.NewUserRouter(g)
+
+	log.Fatal(g.Run(":8000"))
 }

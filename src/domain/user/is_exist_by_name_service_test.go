@@ -2,7 +2,9 @@ package user_test
 
 import (
 	"context"
+	"database/sql"
 	"errors"
+	"github.com/yuuki-tsujimura/architecture-study/src/support/apperr"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -38,7 +40,7 @@ func TestExec(t *testing.T) {
 			name:     "異常系：存在しないユーザー名（NotFound）の場合",
 			userName: "non_existing_user",
 			mockFunc: func() {
-				mockRepo.EXPECT().FindByName(context.Background(), "non_existing_user").Return(nil, user.IsNotFound)
+				mockRepo.EXPECT().FindByName(context.Background(), "non_existing_user").Return(nil, apperr.NotFoundWrapf(sql.ErrNoRows, "RdbUserRepositoryImpl.FindByName failed to find user"))
 			},
 			expected:      false,
 			expectedError: nil,
@@ -50,7 +52,7 @@ func TestExec(t *testing.T) {
 				mockRepo.EXPECT().FindByName(context.Background(), "error_user").Return(nil, errors.New("server error"))
 			},
 			expected:      false,
-			expectedError: errors.New("server error"),
+			expectedError: apperr.Internal("server error"),
 		},
 	}
 
@@ -59,7 +61,11 @@ func TestExec(t *testing.T) {
 			tc.mockFunc()
 			bool, err := isExistByNameService.Exec(context.Background(), tc.userName)
 			assert.Equal(t, tc.expected, bool)
-			assert.Equal(t, tc.expectedError, err)
+			if tc.expectedError != nil {
+				assert.EqualError(t, tc.expectedError, err.Error())
+			} else {
+				assert.Nil(t, err)
+			}
 		})
 	}
 }

@@ -1,9 +1,8 @@
 package tag
 
 import (
-	"errors"
-
 	"github.com/google/uuid"
+	"github.com/yuuki-tsujimura/architecture-study/src/support/apperr"
 )
 
 type TagID string
@@ -14,7 +13,7 @@ func NewTagID() TagID {
 
 func NewTagIDByVal(val string) (TagID, error) {
 	if val == "" {
-		return TagID(""), errors.New("tagID must not be empty")
+		return TagID(""), apperr.BadRequest("tagID must not be empty")
 	}
 	return TagID(val), nil
 }

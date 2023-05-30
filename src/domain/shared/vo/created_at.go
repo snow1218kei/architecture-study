@@ -1,8 +1,9 @@
 package shared
 
 import (
-	"errors"
 	"time"
+
+	"github.com/yuuki-tsujimura/architecture-study/src/support/apperr"
 )
 
 type CreatedAt time.Time
@@ -13,7 +14,7 @@ func NewCreatedAt() CreatedAt {
 
 func NewCreatedAtByVal(val time.Time) (CreatedAt, error) {
 	if val.IsZero() {
-		return CreatedAt(time.Time{}), errors.New("createdAt must not be empty")
+		return CreatedAt(time.Time{}), apperr.BadRequest("createdAt must not be empty")
 	}
 	return CreatedAt(val), nil
 }
