@@ -8,6 +8,11 @@ import (
 	"github.com/yuuki-tsujimura/architecture-study/src/support/apperr"
 )
 
+const (
+	maxDetailLength = 255
+	minStartYear    = 1970
+)
+
 type Career struct {
 	careerID  CareerID
 	detail    string
@@ -99,27 +104,24 @@ func ConvertCareersToCareerData(careers []*Career) []*CareerData {
 }
 
 func checkDetailLength(detail string) error {
-	const MaxLength = 255
-	if l := utf8.RuneCountInString(detail); l > MaxLength {
-		return apperr.BadRequestf("detailは%d文字以下である必要があります。(現在%d文字)", MaxLength, l)
+	if l := utf8.RuneCountInString(detail); l > maxDetailLength {
+		return apperr.BadRequestf("detailは%d文字以下である必要があります。(現在%d文字)", maxDetailLength, l)
 	}
 
 	return nil
 }
 
 func validateStartYear(startYear uint16) error {
-	const MinStartYear = 1970
-	if y := startYear; y < MinStartYear {
-		return apperr.BadRequestf("startYearは%d年以上である必要があります: %d", MinStartYear, y)
+	if y := startYear; y < minStartYear {
+		return apperr.BadRequestf("startYearは%d年以上である必要があります: %d", minStartYear, y)
 	}
 
 	return nil
 }
 
 func validateEndYear(endYear uint16, startYear uint16) error {
-	const MinStartYear = 1970
-	if endYear < MinStartYear || endYear <= startYear {
-		return apperr.BadRequestf("endYearは%d年以上であり、startYearより後の数値である必要があります: %d", MinStartYear, endYear)
+	if endYear < minStartYear || endYear <= startYear {
+		return apperr.BadRequestf("endYearは%d年以上であり、startYearより後の数値である必要があります: %d", minStartYear, endYear)
 	}
 	return nil
 }

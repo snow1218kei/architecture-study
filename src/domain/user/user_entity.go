@@ -8,6 +8,11 @@ import (
 	"github.com/yuuki-tsujimura/architecture-study/src/support/apperr"
 )
 
+const (
+	maxNameLength    = 255
+	maxProfileLength = 2000
+)
+
 type User struct {
 	userID    UserID
 	name      string
@@ -100,17 +105,15 @@ func ConvertUserToUserData(user *User) UserData {
 }
 
 func checkNameLength(name string) error {
-	const MaxLength = 255
 	if l := utf8.RuneCountInString(name); l > 255 {
-		return apperr.BadRequestf("名前は%d文字以下である必要があります。(現在%d文字)", MaxLength, l)
+		return apperr.BadRequestf("名前は%d文字以下である必要があります。(現在%d文字)", maxNameLength, l)
 	}
 	return nil
 }
 
 func checkProfileLength(profile string) error {
-	const MaxLength = 2000
 	if l := utf8.RuneCountInString(profile); l >= 2000 {
-		return apperr.BadRequestf("プロフィールは%d文字以下である必要があります。(現在%d文字)", MaxLength, l)
+		return apperr.BadRequestf("プロフィールは%d文字以下である必要があります。(現在%d文字)", maxProfileLength, l)
 	}
 	return nil
 }

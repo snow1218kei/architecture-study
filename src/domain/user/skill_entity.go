@@ -8,6 +8,13 @@ import (
 	"github.com/yuuki-tsujimura/architecture-study/src/support/apperr"
 )
 
+const (
+	minValue = 1
+	maxValue = 5
+	minYear  = 1
+	maxYear  = 5
+)
+
 type Skill struct {
 	skillID    SkillID
 	tagID      tag.TagID
@@ -86,8 +93,6 @@ func ConvertSkillsToSkillData(skills []*Skill) []*SkillData {
 }
 
 func validateEvalation(evaluation uint16) error {
-	const minValue = 1
-	const maxValue = 5
 	if evaluation < minValue || maxValue < evaluation {
 		return apperr.BadRequestf("評価は1〜5の5段階です: %d", evaluation)
 	}
@@ -95,8 +100,6 @@ func validateEvalation(evaluation uint16) error {
 }
 
 func validateYears(years uint16) error {
-	const minYear = 1
-	const maxYear = 5
 	if years < minYear || maxYear < years {
 		return apperr.BadRequestf("1年以上、5年以内で入力してください: %d", years)
 	}
