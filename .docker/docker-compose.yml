@@ -15,6 +15,12 @@ services:
       - '../src:/app/src'
     depends_on:
       - db
+    environment:
+      - 'DB_HOST=db'
+      - 'DB_PORT=5432'
+      - 'DB_USER=postgres'
+      - 'DB_PASSWORD=postgres'
+      - 'DB_NAME=architecture_study'
   db:
     container_name: architecture_study
     image: postgres
