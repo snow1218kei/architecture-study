@@ -61,7 +61,7 @@ func createUser(input *userinput.CreateUserInput) (*user.User, error) {
 		Profile:  input.UserInput.Profile,
 	}
 
-	var careersParams []user.CareerParams
+	careersParams := make([]user.CareerParams, 0, len(input.CareersInput))
 	for _, careerInput := range input.CareersInput {
 		careerParams := user.CareerParams{
 			Detail:    careerInput.Detail,
@@ -71,7 +71,7 @@ func createUser(input *userinput.CreateUserInput) (*user.User, error) {
 		careersParams = append(careersParams, careerParams)
 	}
 
-	var skillsParams []user.SkillParams
+	skillsParams := make([]user.SkillParams, 0, len(input.SkillsInput))
 	for _, skillInput := range input.SkillsInput {
 		skillParams := user.SkillParams{
 			TagID:      skillInput.TagID,

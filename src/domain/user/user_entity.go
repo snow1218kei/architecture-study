@@ -31,6 +31,13 @@ type UserParams struct {
 	Profile  string
 }
 
+type UserUpdateParams struct {
+	Name     *string
+	Email    *string
+	Password *string
+	Profile  *string
+}
+
 type UserInput struct {
 	UserID    UserID
 	Name      string
@@ -115,5 +122,43 @@ func checkProfileLength(profile string) error {
 	if l := utf8.RuneCountInString(profile); l >= 2000 {
 		return apperr.BadRequestf("プロフィールは%d文字以下である必要があります。(現在%d文字)", maxProfileLength, l)
 	}
+	return nil
+}
+
+func (u *User) update(params UserUpdateParams) error {
+	if params.Name != nil {
+		if err := checkNameLength(*params.Name); err != nil {
+			return err
+		}
+
+		u.name = *params.Name
+	}
+
+	if params.Email != nil {
+		email, err := shared.NewEmail(*params.Email)
+		if err != nil {
+			return err
+		}
+
+		u.email = email
+	}
+
+	if params.Password != nil {
+		password, err := NewPassword(*params.Password)
+		if err != nil {
+			return err
+		}
+
+		u.password = password
+	}
+
+	if params.Profile != nil {
+		if err := checkProfileLength(*params.Profile); err != nil {
+			return err
+		}
+
+		u.profile = *params.Profile
+	}
+
 	return nil
 }

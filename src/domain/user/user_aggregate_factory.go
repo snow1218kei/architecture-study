@@ -25,7 +25,7 @@ func CreateUserAggregate(userParams UserParams, careersParams []CareerParams, sk
 	if err != nil {
 		return nil, err
 	}
-	
+
 	userInput := UserInput{
 		Name:      userParams.Name,
 		Email:     email,
@@ -123,4 +123,49 @@ func GenFactoryForTest(userParams UserParams, careerParams []CareerParams, skill
 	careers := GenCareersForTest(user.careers[0].careerID, careerParams[0].Detail, careerParams[0].StartYear, careerParams[0].EndYear, user.careers[0].createdAt)
 	skills := GenSkillsForTest(user.skills[0].skillID, tag.TagID(skillParams[0].TagID), skillParams[0].Evaluation, skillParams[0].Years, user.skills[0].createdAt)
 	return GenUserForTest(user.userID, userParams.Name, shared.Email(userParams.Email), Password(userParams.Password), userParams.Profile, careers, skills, user.createdAt)
+}
+
+func UpdateUserAggregate(user *User, userParams UserUpdateParams, careersParams []CareerUpdateParams, skillsParams []SkillUpdateParams) error {
+
+	if err := prepareUpdatedCareers(user, careersParams); err != nil {
+		return err
+	}
+
+	if err := prepareUpdatedSkills(user, skillsParams); err != nil {
+		return err
+	}
+
+	if err := user.update(userParams); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func prepareUpdatedCareers(user *User, careersParams []CareerUpdateParams) error {
+	for _, career := range user.careers {
+		for _, careerParams := range careersParams {
+			if career.careerID == careerParams.ID {
+				if err := career.update(&careerParams); err != nil {
+					return err
+				}
+			}
+		}
+	}
+
+	return nil
+}
+
+func prepareUpdatedSkills(user *User, skillsParams []SkillUpdateParams) error {
+	for _, skill := range user.skills {
+		for _, skillParams := range skillsParams {
+			if skill.skillID == skillParams.ID {
+				if err := skill.update(&skillParams); err != nil {
+					return err
+				}
+			}
+		}
+	}
+
+	return nil
 }

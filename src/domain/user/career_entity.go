@@ -27,6 +27,13 @@ type CareerParams struct {
 	EndYear   uint16
 }
 
+type CareerUpdateParams struct {
+	ID        CareerID
+	Detail    *string
+	StartYear *uint16
+	EndYear   *uint16
+}
+
 type CareerData struct {
 	CareerID  string
 	Detail    string
@@ -123,5 +130,39 @@ func validateEndYear(endYear uint16, startYear uint16) error {
 	if endYear < minStartYear || endYear <= startYear {
 		return apperr.BadRequestf("endYearは%d年以上であり、startYearより後の数値である必要があります: %d", minStartYear, endYear)
 	}
+	return nil
+}
+
+func (c *Career) update(params *CareerUpdateParams) error {
+	if params.Detail != nil {
+		if err := checkDetailLength(*params.Detail); err != nil {
+			return err
+		}
+
+		c.detail = *params.Detail
+	}
+
+	if params.StartYear != nil {
+		if err := validateStartYear(*params.StartYear); err != nil {
+			return err
+		}
+
+		c.startYear = *params.StartYear
+	}
+
+	if params.EndYear != nil && params.StartYear != nil {
+		if err := validateEndYear(*params.EndYear, *params.StartYear); err != nil {
+			return err
+		}
+
+		c.endYear = *params.EndYear
+	} else if params.EndYear != nil {
+		if err := validateEndYear(*params.EndYear, c.startYear); err != nil {
+			return err
+		}
+
+		c.endYear = *params.EndYear
+	}
+
 	return nil
 }

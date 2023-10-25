@@ -29,6 +29,13 @@ type SkillParams struct {
 	Years      uint16
 }
 
+type SkillUpdateParams struct {
+	ID         SkillID
+	TagID      *string
+	Evaluation *uint16
+	Years      *uint16
+}
+
 type SkillData struct {
 	SkillID    string
 	TagID      string
@@ -103,5 +110,34 @@ func validateYears(years uint16) error {
 	if years < minYear || maxYear < years {
 		return apperr.BadRequestf("1年以上、5年以内で入力してください: %d", years)
 	}
+	return nil
+}
+
+func (s *Skill) update(params *SkillUpdateParams) error {
+	if params.Evaluation != nil {
+		if err := validateEvalation(*params.Evaluation); err != nil {
+			return err
+		}
+
+		s.evaluation = *params.Evaluation
+	}
+
+	if params.Years != nil {
+		if err := validateYears(*params.Years); err != nil {
+			return err
+		}
+
+		s.years = *params.Years
+	}
+
+	if params.TagID != nil {
+		tagID, err := tag.NewTagIDByVal(*params.TagID)
+		if err != nil {
+			return err
+		}
+
+		s.tagID = tagID
+	}
+
 	return nil
 }
