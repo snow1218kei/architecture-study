@@ -34,7 +34,7 @@ func (usecase *UpdateUserUseCase) Exec(ctx context.Context, input *userinput.Upd
 		Profile:  input.UserInput.Profile,
 	}
 
-	var careersParams []user.CareerUpdateParams
+	careersParams := make([]user.CareerUpdateParams, 0, len(input.CareersInput))
 	for _, careerInput := range input.CareersInput {
 		careerParams := user.CareerUpdateParams{
 			Detail:    careerInput.Detail,
@@ -44,7 +44,7 @@ func (usecase *UpdateUserUseCase) Exec(ctx context.Context, input *userinput.Upd
 		careersParams = append(careersParams, careerParams)
 	}
 
-	var skillsParams []user.SkillUpdateParams
+	skillsParams := make([]user.SkillUpdateParams, 0, len(input.SkillsInput))
 	for _, skillInput := range input.SkillsInput {
 		skillParams := user.SkillUpdateParams{
 			TagID:      skillInput.TagID,
@@ -58,7 +58,7 @@ func (usecase *UpdateUserUseCase) Exec(ctx context.Context, input *userinput.Upd
 		return err
 	}
 
-	err = usecase.userRepo.Update(usr)
+	err = usecase.userRepo.Update(ctx, usr)
 	if err != nil {
 		return err
 	}
