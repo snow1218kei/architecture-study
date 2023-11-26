@@ -29,8 +29,8 @@ type MentorRequirementParams struct {
 	Budget             BudgetParams
 	ApplicationPeriod  string
 	Status             string
-	TagIDs             []uint16
-	UserID             uint16
+	TagIDs             []tag.TagID
+	UserID             user.UserID
 }
 
 func NewMentorRequirement(params *MentorRequirementParams) (*MentorRequirement, error) {
@@ -42,15 +42,23 @@ func NewMentorRequirement(params *MentorRequirementParams) (*MentorRequirement, 
 		return nil, err
 	}
 
-	if err := validateCategory(Category(params.Category)); err != nil {
+	if err := validateCategory(params.Category); err != nil {
 		return nil, err
 	}
 
-	if err := validateContractType(ContractType(params.ContractType)); err != nil {
+	if err := validateContractType(params.ContractType); err != nil {
 		return nil, err
 	}
 
-	if err := validateStatus(Status(params.Status)); err != nil {
+	if err := validateStatus(params.Status); err != nil {
+		return nil, err
+	}
+
+	if err := validateConsultationMethod(params.ConsultationMethod); err != nil {
+		return nil, err
+	}
+
+	if err := validateApplicationPeriod(params.ApplicationPeriod); err != nil {
 		return nil, err
 	}
 
@@ -69,8 +77,8 @@ func NewMentorRequirement(params *MentorRequirementParams) (*MentorRequirement, 
 		budget:             *budget,
 		applicationPeriod:  ApplicationPeriod(params.ApplicationPeriod),
 		status:             Status(params.Status),
-		tagIDs:             convertToTagIDs(params.TagIDs),
-		userID:             user.UserID(params.UserID),
+		tagIDs:             params.TagIDs,
+		userID:             params.UserID,
 	}
 
 	return mentorReq, nil

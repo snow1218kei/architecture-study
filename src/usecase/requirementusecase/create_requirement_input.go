@@ -1,4 +1,4 @@
-package requirementinput
+package requirementusecase
 
 type CreateRequirementInput struct {
 	Title              string

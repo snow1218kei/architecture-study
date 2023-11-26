@@ -9,17 +9,17 @@ const (
 	Marketing   Category = "マーケティング"
 	Design      Category = "デザイン"
 	Writing     Category = "ライティング"
-	Video       Category = "動画・映像"
+	Movie       Category = "動画・映像"
 	Business    Category = "ビジネス"
 	Language    Category = "語学"
 	Lifestyle   Category = "ライフスタイル"
 )
 
-func validateCategory(category Category) error {
+func validateCategory(category string) error {
 	switch category {
-	case Programming, Marketing, Design, Writing, Video, Business, Language, Lifestyle:
+	case string(Programming), string(Marketing), string(Design), string(Writing), string(Movie), string(Business), string(Language), string(Lifestyle):
 		return nil
 	default:
-		return apperr.BadRequestf("categoryはゆう: %d", category)
+		return apperr.BadRequestf("無効なcategory: %d", category)
 	}
 }

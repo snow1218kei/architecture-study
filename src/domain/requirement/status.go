@@ -5,15 +5,15 @@ import "github.com/yuuki-tsujimura/architecture-study/src/support/apperr"
 type Status string
 
 const (
-	publish    Status = "公開"
-	suspension Status = "中止"
+	Publish    Status = "公開"
+	Suspension Status = "中止"
 )
 
-func validateStatus(status Status) error {
+func validateStatus(status string) error {
 	switch status {
-	case publish, suspension:
+	case string(Publish), string(Suspension):
 		return nil
 	default:
-		return apperr.BadRequestf("categoryはゆう: %d", status)
+		return apperr.BadRequestf("無効なstatusです: %d", status)
 	}
 }

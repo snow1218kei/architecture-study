@@ -2,6 +2,6 @@ package requirement
 
 import "context"
 
-type Repository interface {
+type ReqRepository interface {
 	Store(context.Context, *MentorRequirement) error
 }

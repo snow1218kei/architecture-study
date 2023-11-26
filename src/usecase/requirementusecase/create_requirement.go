@@ -2,20 +2,21 @@ package requirementusecase
 
 import (
 	"context"
+	"strings"
+
 	"github.com/yuuki-tsujimura/architecture-study/src/domain/requirement"
 	"github.com/yuuki-tsujimura/architecture-study/src/domain/tag"
 	"github.com/yuuki-tsujimura/architecture-study/src/domain/user"
 	"github.com/yuuki-tsujimura/architecture-study/src/support/apperr"
-	"github.com/yuuki-tsujimura/architecture-study/src/usecase/requirementusecase/requirementinput"
 )
 
 type CreateRequirementUsecase struct {
-	reqRepo  requirement.Repository
-	tagRepo  tag.Repository
+	reqRepo  requirement.ReqRepository
+	tagRepo  tag.TagRepository
 	userRepo user.UserRepository
 }
 
-func NewCreateRequirementUsecase(reqRepo requirement.Repository, tagRepo tag.Repository, userRepo user.UserRepository) *CreateRequirementUsecase {
+func NewCreateRequirementUsecase(reqRepo requirement.ReqRepository, tagRepo tag.TagRepository, userRepo user.UserRepository) *CreateRequirementUsecase {
 	return &CreateRequirementUsecase{
 		reqRepo,
 		tagRepo,
@@ -23,24 +24,51 @@ func NewCreateRequirementUsecase(reqRepo requirement.Repository, tagRepo tag.Rep
 	}
 }
 
-func (u *CreateRequirementUsecase) Exec(ctx context.Context, input *requirementinput.CreateRequirementInput) error {
+func (u *CreateRequirementUsecase) Exec(ctx context.Context, input *CreateRequirementInput) error {
 	tagExistsService := tag.NewTagIDExistsService(u.tagRepo)
+	tagIDs := make([]tag.TagID, len(input.TagIDs))
 	for tagID := range input.TagIDs {
-		isExist, err := tagExistsService.Exec(ctx, tag.TagID(tagID))
+		newTagID, err := tag.NewTagIDByVal(string(tagID))
 		if err != nil {
 			return err
 		}
-		if isExist {
-			return apperr.BadRequestWrapf(err, "存在しているので他の名前でお願いします: %s", tagID)
-		}
+		tagIDs = append(tagIDs, newTagID)
 	}
-
-	userExistsService := user.NewIsExistByIDService(u.userRepo)
-	isExist, err := userExistsService.Run(ctx, user.UserID(input.UserID))
+	isTagExist, existTagIDs, err := tagExistsService.Exec(ctx, tagIDs)
 	if err != nil {
 		return err
 	}
-	if isExist {
+	if !isTagExist {
+		// existTagIDsをマップに保存し、検索を高速化
+		found := make(map[tag.TagID]bool)
+		for _, existID := range existTagIDs {
+			found[existID] = true
+		}
+
+		// 存在しないタグを見つける
+		var notExistTags []string
+		for _, tagID := range tagIDs {
+			if !found[tagID] {
+				// TagIDをstringに変換するメソッドを使用して、ここを調整してください。
+				notExistTags = append(notExistTags, tagID.String())
+			}
+		}
+
+		// 存在しないタグのIDを結合し、エラーメッセージとして返す
+		notExistTagIDsStr := strings.Join(notExistTags, ", ")
+		return apperr.BadRequestWrapf(err, "存在していないtagIDが含まれています: %s", notExistTagIDsStr)
+	}
+
+	userExistsService := user.NewIsExistByIDService(u.userRepo)
+	userID, err := user.NewUserIDByVal(string(input.UserID))
+	if err != nil {
+		return err
+	}
+	isUserExist, err := userExistsService.Run(ctx, userID)
+	if err != nil {
+		return err
+	}
+	if isUserExist {
 		return apperr.BadRequestWrapf(err, "存在しているので他の名前でお願いします: %s", input.UserID)
 	}
 
@@ -53,8 +81,8 @@ func (u *CreateRequirementUsecase) Exec(ctx context.Context, input *requirementi
 		Budget:             requirement.BudgetParams(input.Budget),
 		ApplicationPeriod:  input.ApplicationPeriod,
 		Status:             input.Status,
-		TagIDs:             input.TagIDs,
-		UserID:             input.UserID,
+		TagIDs:             tagIDs,
+		UserID:             userID,
 	}
 
 	mentorRequirement, err := requirement.NewMentorRequirement(mentorRequirementParams)

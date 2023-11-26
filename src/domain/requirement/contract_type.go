@@ -5,15 +5,15 @@ import "github.com/yuuki-tsujimura/architecture-study/src/support/apperr"
 type ContractType string
 
 const (
-	single     ContractType = "単発"
-	continuous ContractType = "継続"
+	Single     ContractType = "単発"
+	Continuous ContractType = "継続"
 )
 
-func validateContractType(contractType ContractType) error {
+func validateContractType(contractType string) error {
 	switch contractType {
-	case single, continuous:
+	case string(Single), string(Continuous):
 		return nil
 	default:
-		return apperr.BadRequestf("categoryはゆう: %d", contractType)
+		return apperr.BadRequestf("無効なcontractType: %d", contractType)
 	}
 }

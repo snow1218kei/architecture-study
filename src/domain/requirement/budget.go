@@ -2,6 +2,8 @@ package requirement
 
 import "github.com/yuuki-tsujimura/architecture-study/src/support/apperr"
 
+const MinimumBudget uint16 = 1000
+
 type Budget struct {
 	budgetID   BudgetID
 	lowerBound uint16
@@ -40,8 +42,8 @@ func (b *Budget) isValid() error {
 }
 
 func (b *Budget) isAtLeastMinimum() error {
-	if b.lowerBound < 1000 || b.upperBound < 1000 {
-		return apperr.BadRequestf("lowerBoundとupperBoundは%1000以上である必要があります: %d", b.lowerBound, b.upperBound)
+	if b.lowerBound < MinimumBudget || b.upperBound < MinimumBudget {
+		return apperr.BadRequestf("lowerBoundとupperBoundは%d円以上である必要があります: lowerBound=%d, upperBound=%d", MinimumBudget, b.lowerBound, b.upperBound)
 	}
 
 	return nil
@@ -49,7 +51,7 @@ func (b *Budget) isAtLeastMinimum() error {
 
 func (b *Budget) isLowerBoundLessThanUpperBound() error {
 	if b.lowerBound > b.upperBound {
-		return apperr.BadRequestf("lowerBoundはupperBound以下である必要があります: %d", b.lowerBound, b.upperBound)
+		return apperr.BadRequestf("lowerBoundはupperBound以下である必要があります: lowerBound=%d, upperBound=%d", b.lowerBound, b.upperBound)
 	}
 
 	return nil

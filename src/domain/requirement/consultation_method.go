@@ -1,8 +1,19 @@
 package requirement
 
+import "github.com/yuuki-tsujimura/architecture-study/src/support/apperr"
+
 type ConsultationMethod string
 
 const (
-	chat  ConsultationMethod = "チャット"
-	video ConsultationMethod = "ビデオ"
+	Chat  ConsultationMethod = "チャット"
+	Video ConsultationMethod = "ビデオ"
 )
+
+func validateConsultationMethod(consultationMethod string) error {
+	switch consultationMethod {
+	case string(Chat), string(Video):
+		return nil
+	default:
+		return apperr.BadRequestf("無効なconsultationMethodです: %d", consultationMethod)
+	}
+}
