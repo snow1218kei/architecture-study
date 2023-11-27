@@ -27,8 +27,8 @@ func NewCreateRequirementUsecase(reqRepo requirement.ReqRepository, tagRepo tag.
 func (u *CreateRequirementUsecase) Exec(ctx context.Context, input *CreateRequirementInput) error {
 	tagExistsService := tag.NewTagIDExistsService(u.tagRepo)
 	tagIDs := make([]tag.TagID, len(input.TagIDs))
-	for tagID := range input.TagIDs {
-		newTagID, err := tag.NewTagIDByVal(string(tagID))
+	for _, tagID := range input.TagIDs {
+		newTagID, err := tag.NewTagIDByVal(tagID)
 		if err != nil {
 			return err
 		}
@@ -60,7 +60,7 @@ func (u *CreateRequirementUsecase) Exec(ctx context.Context, input *CreateRequir
 	}
 
 	userExistsService := user.NewIsExistByIDService(u.userRepo)
-	userID, err := user.NewUserIDByVal(string(input.UserID))
+	userID, err := user.NewUserIDByVal(input.UserID)
 	if err != nil {
 		return err
 	}

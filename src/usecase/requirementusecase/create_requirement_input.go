@@ -9,8 +9,8 @@ type CreateRequirementInput struct {
 	Budget             CreateBudgetInput
 	ApplicationPeriod  string
 	Status             string
-	TagIDs             []uint16
-	UserID             uint16
+	TagIDs             []string
+	UserID             string
 }
 
 type CreateBudgetInput struct {
