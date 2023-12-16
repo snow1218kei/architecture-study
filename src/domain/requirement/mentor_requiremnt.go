@@ -1,6 +1,7 @@
 package requirement
 
 import (
+	"github.com/yuuki-tsujimura/architecture-study/src/domain/shared/vo"
 	"github.com/yuuki-tsujimura/architecture-study/src/domain/tag"
 	"github.com/yuuki-tsujimura/architecture-study/src/domain/user"
 	"github.com/yuuki-tsujimura/architecture-study/src/support/apperr"
@@ -9,13 +10,13 @@ import (
 type MentorRequirement struct {
 	mentorID           MentorID
 	title              string
-	category           Category
-	contractType       ContractType
-	consultationMethod ConsultationMethod
+	category           shared.Category
+	contractType       shared.ContractType
+	consultationMethod shared.ConsultationMethod
 	description        string
 	budget             Budget
 	applicationPeriod  ApplicationPeriod
-	status             Status
+	status             shared.Status
 	tagIDs             []tag.TagID
 	userID             user.UserID
 }
@@ -42,19 +43,19 @@ func NewMentorRequirement(params *MentorRequirementParams) (*MentorRequirement, 
 		return nil, err
 	}
 
-	if err := validateCategory(params.Category); err != nil {
+	if err := shared.ValidateCategory(params.Category); err != nil {
 		return nil, err
 	}
 
-	if err := validateContractType(params.ContractType); err != nil {
+	if err := shared.ValidateContractType(params.ContractType); err != nil {
 		return nil, err
 	}
 
-	if err := validateStatus(params.Status); err != nil {
+	if err := shared.ValidateStatus(params.Status); err != nil {
 		return nil, err
 	}
 
-	if err := validateConsultationMethod(params.ConsultationMethod); err != nil {
+	if err := shared.ValidateConsultationMethod(params.ConsultationMethod); err != nil {
 		return nil, err
 	}
 
@@ -70,13 +71,13 @@ func NewMentorRequirement(params *MentorRequirementParams) (*MentorRequirement, 
 	mentorReq := &MentorRequirement{
 		mentorID:           newMentorID(),
 		title:              params.Title,
-		category:           Category(params.Category),
-		contractType:       ContractType(params.ContractType),
-		consultationMethod: ConsultationMethod(params.ConsultationMethod),
+		category:           shared.Category(params.Category),
+		contractType:       shared.ContractType(params.ContractType),
+		consultationMethod: shared.ConsultationMethod(params.ConsultationMethod),
 		description:        params.Description,
 		budget:             *budget,
 		applicationPeriod:  ApplicationPeriod(params.ApplicationPeriod),
-		status:             Status(params.Status),
+		status:             shared.Status(params.Status),
 		tagIDs:             params.TagIDs,
 		userID:             params.UserID,
 	}

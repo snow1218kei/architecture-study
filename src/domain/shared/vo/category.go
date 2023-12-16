@@ -1,4 +1,4 @@
-package requirement
+package shared
 
 import "github.com/yuuki-tsujimura/architecture-study/src/support/apperr"
 
@@ -15,7 +15,7 @@ const (
 	Lifestyle   Category = "ライフスタイル"
 )
 
-func validateCategory(category string) error {
+func ValidateCategory(category string) error {
 	switch category {
 	case string(Programming), string(Marketing), string(Design), string(Writing), string(Movie), string(Business), string(Language), string(Lifestyle):
 		return nil

@@ -1,4 +1,4 @@
-package requirement
+package shared
 
 import "github.com/yuuki-tsujimura/architecture-study/src/support/apperr"
 
@@ -9,7 +9,7 @@ const (
 	Suspension Status = "中止"
 )
 
-func validateStatus(status string) error {
+func ValidateStatus(status string) error {
 	switch status {
 	case string(Publish), string(Suspension):
 		return nil

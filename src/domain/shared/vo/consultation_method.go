@@ -1,4 +1,4 @@
-package requirement
+package shared
 
 import "github.com/yuuki-tsujimura/architecture-study/src/support/apperr"
 
@@ -9,7 +9,7 @@ const (
 	Video ConsultationMethod = "ビデオ"
 )
 
-func validateConsultationMethod(consultationMethod string) error {
+func ValidateConsultationMethod(consultationMethod string) error {
 	switch consultationMethod {
 	case string(Chat), string(Video):
 		return nil

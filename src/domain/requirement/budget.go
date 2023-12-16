@@ -1,6 +1,8 @@
 package requirement
 
-import "github.com/yuuki-tsujimura/architecture-study/src/support/apperr"
+import (
+	"github.com/yuuki-tsujimura/architecture-study/src/support/apperr"
+)
 
 const minimumBudget uint16 = 1000
 

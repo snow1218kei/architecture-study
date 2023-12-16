@@ -1,4 +1,4 @@
-package requirement
+package shared
 
 import "github.com/yuuki-tsujimura/architecture-study/src/support/apperr"
 
@@ -9,7 +9,7 @@ const (
 	Continuous ContractType = "継続"
 )
 
-func validateContractType(contractType string) error {
+func ValidateContractType(contractType string) error {
 	switch contractType {
 	case string(Single), string(Continuous):
 		return nil
