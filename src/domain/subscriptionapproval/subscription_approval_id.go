@@ -1,4 +1,4 @@
-package plan
+package subscriptionapproval
 
 import (
 	"github.com/google/uuid"

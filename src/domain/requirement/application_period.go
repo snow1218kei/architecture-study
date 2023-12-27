@@ -9,11 +9,13 @@ const (
 	TwoWeeks ApplicationPeriod = "最大14日"
 )
 
-func validateApplicationPeriod(applicationPeriod string) error {
-	switch applicationPeriod {
-	case string(OneDay), string(TwoWeeks):
-		return nil
+func newApplicationPeriod(period string) (ApplicationPeriod, error) {
+	switch period {
+	case string(OneDay):
+		return OneDay, nil
+	case string(TwoWeeks):
+		return TwoWeeks, nil
 	default:
-		return apperr.BadRequestf("無効なapplicationPeriodです: %d", applicationPeriod)
+		return "", apperr.BadRequestf("無効な申請期間: %s", period)
 	}
 }

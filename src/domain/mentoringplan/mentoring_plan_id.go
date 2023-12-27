@@ -1,4 +1,4 @@
-package plan
+package mentoringplan
 
 import (
 	"github.com/google/uuid"

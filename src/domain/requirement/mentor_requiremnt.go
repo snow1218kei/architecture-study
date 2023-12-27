@@ -5,6 +5,7 @@ import (
 	"github.com/yuuki-tsujimura/architecture-study/src/domain/tag"
 	"github.com/yuuki-tsujimura/architecture-study/src/domain/user"
 	"github.com/yuuki-tsujimura/architecture-study/src/support/apperr"
+	"unicode/utf8"
 )
 
 type MentorRequirement struct {
@@ -43,23 +44,28 @@ func NewMentorRequirement(params *MentorRequirementParams) (*MentorRequirement, 
 		return nil, err
 	}
 
-	if err := shared.ValidateCategory(params.Category); err != nil {
+	category, err := shared.NewCategory(params.Category)
+	if err != nil {
 		return nil, err
 	}
 
-	if err := shared.ValidateContractType(params.ContractType); err != nil {
+	contractType, err := shared.NewContractType(params.ContractType)
+	if err != nil {
 		return nil, err
 	}
 
-	if err := shared.ValidateStatus(params.Status); err != nil {
+	status, err := shared.NewStatus(params.Status)
+	if err != nil {
 		return nil, err
 	}
 
-	if err := shared.ValidateConsultationMethod(params.ConsultationMethod); err != nil {
+	consultationMethod, err := shared.NewConsultationMethod(params.ConsultationMethod)
+	if err != nil {
 		return nil, err
 	}
 
-	if err := validateApplicationPeriod(params.ApplicationPeriod); err != nil {
+	applicationPeriod, err := newApplicationPeriod(params.ApplicationPeriod)
+	if err != nil {
 		return nil, err
 	}
 
@@ -71,13 +77,13 @@ func NewMentorRequirement(params *MentorRequirementParams) (*MentorRequirement, 
 	mentorReq := &MentorRequirement{
 		mentorID:           newMentorID(),
 		title:              params.Title,
-		category:           shared.Category(params.Category),
-		contractType:       shared.ContractType(params.ContractType),
-		consultationMethod: shared.ConsultationMethod(params.ConsultationMethod),
+		category:           category,
+		contractType:       contractType,
+		consultationMethod: consultationMethod,
 		description:        params.Description,
 		budget:             *budget,
-		applicationPeriod:  ApplicationPeriod(params.ApplicationPeriod),
-		status:             shared.Status(params.Status),
+		applicationPeriod:  applicationPeriod,
+		status:             status,
 		tagIDs:             params.TagIDs,
 		userID:             params.UserID,
 	}
@@ -86,16 +92,16 @@ func NewMentorRequirement(params *MentorRequirementParams) (*MentorRequirement, 
 }
 
 func validateTitle(title string) error {
-	if len(title) == 0 || len(title) > 255 {
-		return apperr.BadRequestf("Titleは0文字以上200文字以下である必要があります: %d", title)
+	if utf8.RuneCountInString(title) == 0 || utf8.RuneCountInString(title) > 255 {
+		return apperr.BadRequestf("Titleは0文字以上200文字以下である必要があります: %s", title)
 	}
 
 	return nil
 }
 
 func validateDescription(description string) error {
-	if len(description) == 0 || len(description) > 2000 {
-		return apperr.BadRequestf("Descriptionは0文字以上2000文字以下である必要があります: %d", description)
+	if utf8.RuneCountInString(description) == 0 || utf8.RuneCountInString(description) > 2000 {
+		return apperr.BadRequestf("Descriptionは0文字以上2000文字以下である必要があります: %s", description)
 	}
 
 	return nil

@@ -9,11 +9,13 @@ const (
 	Suspension Status = "中止"
 )
 
-func ValidateStatus(status string) error {
+func NewStatus(status string) (Status, error) {
 	switch status {
-	case string(Publish), string(Suspension):
-		return nil
+	case string(Publish):
+		return Publish, nil
+	case string(Suspension):
+		return Suspension, nil
 	default:
-		return apperr.BadRequestf("無効なstatusです: %d", status)
+		return "", apperr.BadRequestf("無効なstatusです: %d", status)
 	}
 }

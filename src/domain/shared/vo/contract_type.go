@@ -9,11 +9,13 @@ const (
 	Continuous ContractType = "継続"
 )
 
-func ValidateContractType(contractType string) error {
-	switch contractType {
-	case string(Single), string(Continuous):
-		return nil
+func NewContractType(typ string) (ContractType, error) {
+	switch typ {
+	case string(Single):
+		return Single, nil
+	case string(Continuous):
+		return Continuous, nil
 	default:
-		return apperr.BadRequestf("無効なcontractType: %d", contractType)
+		return "", apperr.BadRequestf("無効な契約タイプ: %s", typ)
 	}
 }

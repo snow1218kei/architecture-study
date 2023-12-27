@@ -2,7 +2,7 @@ package planusecase
 
 import (
 	"context"
-	"github.com/yuuki-tsujimura/architecture-study/src/domain/plan"
+	"github.com/yuuki-tsujimura/architecture-study/src/domain/mentoringplan"
 	"github.com/yuuki-tsujimura/architecture-study/src/domain/tag"
 	"github.com/yuuki-tsujimura/architecture-study/src/domain/user"
 	"github.com/yuuki-tsujimura/architecture-study/src/support/apperr"
@@ -10,12 +10,12 @@ import (
 )
 
 type CreatePlanUsecase struct {
-	planRepo plan.PlanRepository
+	planRepo mentoringplan.PlanRepository
 	tagRepo  tag.TagRepository
 	userRepo user.UserRepository
 }
 
-func NewCreatePlanUsecase(planRepo plan.PlanRepository, tagRepo tag.TagRepository, userRepo user.UserRepository) *CreatePlanUsecase {
+func NewCreatePlanUsecase(planRepo mentoringplan.PlanRepository, tagRepo tag.TagRepository, userRepo user.UserRepository) *CreatePlanUsecase {
 	return &CreatePlanUsecase{
 		planRepo,
 		tagRepo,
@@ -71,7 +71,7 @@ func (u *CreatePlanUsecase) Exec(ctx context.Context, input *CreatePlanInput) er
 		return apperr.BadRequestWrapf(err, "存在しているので他の名前でお願いします: %s", input.UserID)
 	}
 
-	planParams := &plan.MentoringPlanParams{
+	planParams := &mentoringplan.MentoringPlanParams{
 		Title:              input.Title,
 		Content:            input.Content,
 		Pricing:            input.Pricing,
@@ -82,7 +82,7 @@ func (u *CreatePlanUsecase) Exec(ctx context.Context, input *CreatePlanInput) er
 		UserID:             userID,
 	}
 
-	plan, err := plan.NewMentoringPlan(planParams)
+	plan, err := mentoringplan.NewMentoringPlan(planParams)
 	if err != nil {
 		return err
 	}

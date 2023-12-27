@@ -1,14 +1,16 @@
-package plan
+package mentoringplan
 
 import (
 	shared "github.com/yuuki-tsujimura/architecture-study/src/domain/shared/vo"
 	"github.com/yuuki-tsujimura/architecture-study/src/domain/tag"
 	"github.com/yuuki-tsujimura/architecture-study/src/domain/user"
 	"github.com/yuuki-tsujimura/architecture-study/src/support/apperr"
+	"unicode/utf8"
 )
 
 const (
-	MaxLength = 500
+	PlanTitleMaxLength   = 255
+	PlanContentMaxLength = 2000
 )
 
 type MentoringPlan struct {
@@ -21,7 +23,6 @@ type MentoringPlan struct {
 	tagIDs             []tag.TagID
 	status             shared.Status
 	consultationMethod shared.ConsultationMethod
-	subscription       *PlanSubscription
 }
 
 type MentoringPlanParams struct {
@@ -36,15 +37,26 @@ type MentoringPlanParams struct {
 }
 
 func NewMentoringPlan(params *MentoringPlanParams) (*MentoringPlan, error) {
-	if err := shared.ValidateCategory(params.Category); err != nil {
+	if err := validatePlanTitle(params.Title); err != nil {
 		return nil, err
 	}
 
-	if err := shared.ValidateConsultationMethod(params.ConsultationMethod); err != nil {
+	if err := validatePlanContent(params.Content); err != nil {
 		return nil, err
 	}
 
-	if err := shared.ValidateStatus(params.Status); err != nil {
+	category, err := shared.NewCategory(params.Category)
+	if err != nil {
+		return nil, err
+	}
+
+	consultationMethod, err := shared.NewConsultationMethod(params.ConsultationMethod)
+	if err != nil {
+		return nil, err
+	}
+
+	status, err := shared.NewStatus(params.Status)
+	if err != nil {
 		return nil, err
 	}
 
@@ -54,44 +66,25 @@ func NewMentoringPlan(params *MentoringPlanParams) (*MentoringPlan, error) {
 		title:              params.Title,
 		content:            params.Content,
 		pricing:            params.Pricing,
-		category:           shared.Category(params.Category),
+		category:           category,
 		tagIDs:             params.TagIDs,
-		status:             shared.Status(params.Status),
-		consultationMethod: shared.ConsultationMethod(params.ConsultationMethod),
+		status:             status,
+		consultationMethod: consultationMethod,
 	}, nil
 }
 
-func (p *MentoringPlan) AddSubscriptionRequest(message string) error {
-	subscriptionRequest, err := newSubscriptionRequest(message)
-	if err != nil {
-		return err
+func validatePlanTitle(title string) error {
+	if utf8.RuneCountInString(title) > PlanTitleMaxLength {
+		return apperr.BadRequestf("Messageが500文字を超えています: %s", title)
 	}
-
-	planSubscription, err := newPlanSubscription(*subscriptionRequest)
-	if err != nil {
-		return err
-	}
-
-	p.subscription = planSubscription
 
 	return nil
 }
 
-func (p *MentoringPlan) AddSubscriptionApproval(message string) error {
-	if p.subscription == nil {
-		return apperr.Internal("subscription is not initialized")
+func validatePlanContent(content string) error {
+	if utf8.RuneCountInString(content) > PlanContentMaxLength {
+		return apperr.BadRequestf("Messageが500文字を超えています: %s", content)
 	}
-
-	subscriptionApproval, err := newSubscriptionApproval(message)
-	if err != nil {
-		return err
-	}
-
-	p.subscription.setSubscriptionApproval(subscriptionApproval)
 
 	return nil
-}
-
-func (p *MentoringPlan) GetSubscription() *PlanSubscription {
-	return p.subscription
 }

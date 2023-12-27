@@ -9,11 +9,13 @@ const (
 	Video ConsultationMethod = "ビデオ"
 )
 
-func ValidateConsultationMethod(consultationMethod string) error {
-	switch consultationMethod {
-	case string(Chat), string(Video):
-		return nil
+func NewConsultationMethod(method string) (ConsultationMethod, error) {
+	switch method {
+	case string(Chat):
+		return Chat, nil
+	case string(Video):
+		return Video, nil
 	default:
-		return apperr.BadRequestf("無効なconsultationMethodです: %d", consultationMethod)
+		return "", apperr.BadRequestf("無効な相談方法: %s", method)
 	}
 }

@@ -1,4 +1,4 @@
-package plan
+package subscriptionrequest
 
 import (
 	"github.com/google/uuid"

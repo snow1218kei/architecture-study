@@ -15,11 +15,25 @@ const (
 	Lifestyle   Category = "ライフスタイル"
 )
 
-func ValidateCategory(category string) error {
+func NewCategory(category string) (Category, error) {
 	switch category {
-	case string(Programming), string(Marketing), string(Design), string(Writing), string(Movie), string(Business), string(Language), string(Lifestyle):
-		return nil
+	case string(Programming):
+		return Programming, nil
+	case string(Marketing):
+		return Marketing, nil
+	case string(Design):
+		return Design, nil
+	case string(Writing):
+		return Writing, nil
+	case string(Movie):
+		return Movie, nil
+	case string(Business):
+		return Business, nil
+	case string(Language):
+		return Language, nil
+	case string(Lifestyle):
+		return Lifestyle, nil
 	default:
-		return apperr.BadRequestf("無効なcategory: %d", category)
+		return "", apperr.BadRequestf("無効なcategory: %s", category)
 	}
 }
