@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	PlanTitleMaxLength   = 255
-	PlanContentMaxLength = 2000
+	planTitleMaxLength   = 255
+	planContentMaxLength = 2000
 )
 
 type MentoringPlan struct {
@@ -29,11 +29,11 @@ type MentoringPlanParams struct {
 	Title              string
 	Content            string
 	Pricing            uint16
-	Category           string
+	Category           shared.Category
 	UserID             user.UserID
 	TagIDs             []tag.TagID
-	Status             string
-	ConsultationMethod string
+	Status             shared.Status
+	ConsultationMethod shared.ConsultationMethod
 }
 
 func NewMentoringPlan(params *MentoringPlanParams) (*MentoringPlan, error) {
@@ -45,45 +45,30 @@ func NewMentoringPlan(params *MentoringPlanParams) (*MentoringPlan, error) {
 		return nil, err
 	}
 
-	category, err := shared.NewCategory(params.Category)
-	if err != nil {
-		return nil, err
-	}
-
-	consultationMethod, err := shared.NewConsultationMethod(params.ConsultationMethod)
-	if err != nil {
-		return nil, err
-	}
-
-	status, err := shared.NewStatus(params.Status)
-	if err != nil {
-		return nil, err
-	}
-
 	return &MentoringPlan{
 		mentoringPlanID:    newMentoringPlanID(),
 		userID:             params.UserID,
 		title:              params.Title,
 		content:            params.Content,
 		pricing:            params.Pricing,
-		category:           category,
+		category:           params.Category,
 		tagIDs:             params.TagIDs,
-		status:             status,
-		consultationMethod: consultationMethod,
+		status:             params.Status,
+		consultationMethod: params.ConsultationMethod,
 	}, nil
 }
 
 func validatePlanTitle(title string) error {
-	if utf8.RuneCountInString(title) > PlanTitleMaxLength {
-		return apperr.BadRequestf("Messageが500文字を超えています: %s", title)
+	if utf8.RuneCountInString(title) > planTitleMaxLength {
+		return apperr.BadRequestf("Messageが%d文字を超えています: %d", planTitleMaxLength, title)
 	}
 
 	return nil
 }
 
 func validatePlanContent(content string) error {
-	if utf8.RuneCountInString(content) > PlanContentMaxLength {
-		return apperr.BadRequestf("Messageが500文字を超えています: %s", content)
+	if utf8.RuneCountInString(content) > planContentMaxLength {
+		return apperr.BadRequestf("Messageが%d文字を超えています: %d", planContentMaxLength, content)
 	}
 
 	return nil

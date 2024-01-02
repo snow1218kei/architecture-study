@@ -17,23 +17,27 @@ const (
 
 func NewCategory(category string) (Category, error) {
 	switch category {
-	case string(Programming):
+	case Programming.String():
 		return Programming, nil
-	case string(Marketing):
+	case Marketing.String():
 		return Marketing, nil
-	case string(Design):
+	case Design.String():
 		return Design, nil
-	case string(Writing):
+	case Writing.String():
 		return Writing, nil
-	case string(Movie):
+	case Movie.String():
 		return Movie, nil
-	case string(Business):
+	case Business.String():
 		return Business, nil
-	case string(Language):
+	case Language.String():
 		return Language, nil
-	case string(Lifestyle):
+	case Lifestyle.String():
 		return Lifestyle, nil
 	default:
 		return "", apperr.BadRequestf("無効なcategory: %s", category)
 	}
+}
+
+func (category Category) String() string {
+	return string(category)
 }

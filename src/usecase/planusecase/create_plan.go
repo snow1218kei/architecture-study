@@ -3,6 +3,7 @@ package planusecase
 import (
 	"context"
 	"github.com/yuuki-tsujimura/architecture-study/src/domain/mentoringplan"
+	shared "github.com/yuuki-tsujimura/architecture-study/src/domain/shared/vo"
 	"github.com/yuuki-tsujimura/architecture-study/src/domain/tag"
 	"github.com/yuuki-tsujimura/architecture-study/src/domain/user"
 	"github.com/yuuki-tsujimura/architecture-study/src/support/apperr"
@@ -71,13 +72,28 @@ func (u *CreatePlanUsecase) Exec(ctx context.Context, input *CreatePlanInput) er
 		return apperr.BadRequestWrapf(err, "存在しているので他の名前でお願いします: %s", input.UserID)
 	}
 
+	category, err := shared.NewCategory(input.Category)
+	if err != nil {
+		return err
+	}
+
+	consultationMethod, err := shared.NewConsultationMethod(input.ConsultationMethod)
+	if err != nil {
+		return err
+	}
+
+	status, err := shared.NewStatus(input.Status)
+	if err != nil {
+		return err
+	}
+
 	planParams := &mentoringplan.MentoringPlanParams{
 		Title:              input.Title,
 		Content:            input.Content,
 		Pricing:            input.Pricing,
-		Category:           input.Category,
-		ConsultationMethod: input.ConsultationMethod,
-		Status:             input.Status,
+		Category:           category,
+		ConsultationMethod: consultationMethod,
+		Status:             status,
 		TagIDs:             tagIDs,
 		UserID:             userID,
 	}

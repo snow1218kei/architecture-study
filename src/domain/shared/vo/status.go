@@ -11,11 +11,15 @@ const (
 
 func NewStatus(status string) (Status, error) {
 	switch status {
-	case string(Publish):
+	case Publish.String():
 		return Publish, nil
-	case string(Suspension):
+	case Suspension.String():
 		return Suspension, nil
 	default:
-		return "", apperr.BadRequestf("無効なstatusです: %d", status)
+		return "", apperr.BadRequestf("無効なstatusです: %s", status)
 	}
+}
+
+func (status Status) String() string {
+	return string(status)
 }

@@ -23,7 +23,7 @@ type SubscriptionApprovalParams struct {
 
 func NewSubscriptionApproval(params SubscriptionApprovalParams) (*SubscriptionApproval, error) {
 	if utf8.RuneCountInString(params.Message) > ApprovalMessageMaxLength {
-		return nil, apperr.BadRequestf("Messageが500文字を超えています: %s", params.Message)
+		return nil, apperr.BadRequestf("Messageが%d文字を超えています: %d", ApprovalMessageMaxLength, params.Message)
 	}
 
 	return &SubscriptionApproval{

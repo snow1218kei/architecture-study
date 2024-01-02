@@ -11,11 +11,15 @@ const (
 
 func newApplicationPeriod(period string) (ApplicationPeriod, error) {
 	switch period {
-	case string(OneDay):
+	case OneDay.String():
 		return OneDay, nil
-	case string(TwoWeeks):
+	case TwoWeeks.String():
 		return TwoWeeks, nil
 	default:
 		return "", apperr.BadRequestf("無効な申請期間: %s", period)
 	}
+}
+
+func (applicationPeriod ApplicationPeriod) String() string {
+	return string(applicationPeriod)
 }

@@ -23,7 +23,7 @@ type SubscriptionRequestParams struct {
 
 func NewSubscriptionRequest(params SubscriptionRequestParams) (*SubscriptionRequest, error) {
 	if utf8.RuneCountInString(params.Message) > RequestMessageMaxLength {
-		return nil, apperr.BadRequestf("Messageが500文字を超えています: %s", params.Message)
+		return nil, apperr.BadRequestf("Messageが%d文字を超えています: %d", RequestMessageMaxLength, params.Message)
 	}
 
 	return &SubscriptionRequest{

@@ -11,11 +11,15 @@ const (
 
 func NewConsultationMethod(method string) (ConsultationMethod, error) {
 	switch method {
-	case string(Chat):
+	case Chat.String():
 		return Chat, nil
-	case string(Video):
+	case Video.String():
 		return Video, nil
 	default:
 		return "", apperr.BadRequestf("無効な相談方法: %s", method)
 	}
+}
+
+func (consultationMethod ConsultationMethod) String() string {
+	return string(consultationMethod)
 }

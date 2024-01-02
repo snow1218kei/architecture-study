@@ -11,11 +11,15 @@ const (
 
 func NewContractType(typ string) (ContractType, error) {
 	switch typ {
-	case string(Single):
+	case Single.String():
 		return Single, nil
-	case string(Continuous):
+	case Continuous.String():
 		return Continuous, nil
 	default:
 		return "", apperr.BadRequestf("無効な契約タイプ: %s", typ)
 	}
+}
+
+func (contractType ContractType) String() string {
+	return string(contractType)
 }
