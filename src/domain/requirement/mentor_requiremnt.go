@@ -9,9 +9,7 @@ import (
 )
 
 const (
-	minTitleLength       = 0
 	maxTitleLength       = 200
-	minDescriptionLength = 0
 	maxDescriptionLength = 2000
 )
 
@@ -99,16 +97,16 @@ func NewMentorRequirement(params *MentorRequirementParams) (*MentorRequirement, 
 }
 
 func validateTitle(title string) error {
-	if utf8.RuneCountInString(title) == minTitleLength || utf8.RuneCountInString(title) > maxTitleLength {
-		return apperr.BadRequestf("Titleは%d文字以上%d文字以下である必要があります: %d", minTitleLength, maxTitleLength, title)
+	if title == "" || utf8.RuneCountInString(title) > maxTitleLength {
+		return apperr.BadRequestf("Titleは0文字以上%d文字以下である必要があります: %d", maxTitleLength, title)
 	}
 
 	return nil
 }
 
 func validateDescription(description string) error {
-	if utf8.RuneCountInString(description) == minDescriptionLength || utf8.RuneCountInString(description) > maxDescriptionLength {
-		return apperr.BadRequestf("Descriptionは%d文字以上%d文字以下である必要があります: %d", minDescriptionLength, maxDescriptionLength, description)
+	if description == "" || utf8.RuneCountInString(description) > maxDescriptionLength {
+		return apperr.BadRequestf("Descriptionは%d文字以上%d文字以下である必要があります: %d", maxDescriptionLength, description)
 	}
 
 	return nil
