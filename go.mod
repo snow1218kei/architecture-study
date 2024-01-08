@@ -2,8 +2,6 @@ module github.com/yuuki-tsujimura/architecture-study
 
 go 1.19
 
-require github.com/julienschmidt/httprouter v1.3.1-0.20220603155159-34250257ea14
-
 require (
 	github.com/gin-gonic/gin v1.9.0
 	github.com/golang/mock v1.6.0
