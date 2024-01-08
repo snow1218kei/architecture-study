@@ -14,7 +14,7 @@ const (
 )
 
 type MentorRequirement struct {
-	mentorID           MentorID
+	mentorID           MentorRequirementID
 	title              string
 	category           shared.Category
 	contractType       shared.ContractType
