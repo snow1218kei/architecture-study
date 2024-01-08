@@ -5,23 +5,23 @@ import (
 	"github.com/yuuki-tsujimura/architecture-study/src/support/apperr"
 )
 
-type MentorID string
+type MentorRequirementID string
 
-func newMentorID() MentorID {
-	return MentorID(uuid.New().String())
+func newMentorID() MentorRequirementID {
+	return MentorRequirementID(uuid.New().String())
 }
 
-func NewMentorIDByVal(val string) (MentorID, error) {
+func NewMentorRequirementIDByVal(val string) (MentorRequirementID, error) {
 	if val == "" {
-		return MentorID(""), apperr.BadRequest("mentorID must not be empty")
+		return MentorRequirementID(""), apperr.BadRequest("mentorID must not be empty")
 	}
-	return MentorID(val), nil
+	return MentorRequirementID(val), nil
 }
 
-func (mentorID MentorID) String() string {
-	return string(mentorID)
+func (mentorRequirementID MentorRequirementID) String() string {
+	return string(mentorRequirementID)
 }
 
-func (mentorID1 MentorID) Equal(mentorID2 MentorID) bool {
-	return mentorID1 == mentorID2
+func (mentorRequirementID1 MentorRequirementID) Equal(mentorRequirementID2 MentorRequirementID) bool {
+	return mentorRequirementID1 == mentorRequirementID2
 }
