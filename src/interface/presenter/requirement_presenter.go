@@ -17,9 +17,9 @@ func NewRequirementPresenter(presenter Presenter) RequirementPresenter {
 }
 
 type RequirementPresenter interface {
-	RequirementList(out []*requirementusecase.MentorRequirementDTO)
+	RequirementList(out []*requirementusecase.GetMentorRequirementDTO)
 }
 
-func (p *RequirementPresent) RequirementList(out []*requirementusecase.MentorRequirementDTO) {
+func (p *RequirementPresent) RequirementList(out []*requirementusecase.GetMentorRequirementDTO) {
 	p.presenter.JSON(http.StatusOK, out)
 }

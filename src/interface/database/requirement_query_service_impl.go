@@ -16,7 +16,7 @@ func NewRequirementQueryServiceImpl(conn *sqlx.DB) *RequirementQueryServiceImpl 
 	}
 }
 
-func (queryService *RequirementQueryServiceImpl) GetAll(ctx context.Context) ([]*requirementusecase.MentorRequirementDTO, error) {
+func (queryService *RequirementQueryServiceImpl) GetAll(ctx context.Context) ([]*requirementusecase.GetMentorRequirementDTO, error) {
 	// SQLは省略
 	return nil, nil
 }

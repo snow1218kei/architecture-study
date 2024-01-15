@@ -12,7 +12,7 @@ func NewGetAllRequirementsUsecase(queryService RequirementQueryService) *GetAllR
 	}
 }
 
-func (u *GetAllRequirementsUsecase) Exec(ctx context.Context) ([]*MentorRequirementDTO, error) {
+func (u *GetAllRequirementsUsecase) Exec(ctx context.Context) ([]*GetMentorRequirementDTO, error) {
 	mentorRequirents, err := u.queryService.GetAll(ctx)
 	if err != nil {
 		return nil, err

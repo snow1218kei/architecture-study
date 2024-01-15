@@ -1,6 +1,6 @@
 package requirementusecase
 
-type MentorRequirementDTO struct {
+type GetMentorRequirementDTO struct {
 	MentorID           uint16
 	Title              string
 	Category           string
